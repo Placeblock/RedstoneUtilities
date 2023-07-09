@@ -2,7 +2,7 @@ package de.placeblock.redstoneutilities.wireless.listener;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
-import de.placeblock.redstoneutilities.wireless.InteractionPDCUtil;
+import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.RedstoneWire;
@@ -21,9 +21,9 @@ public class RedstoneListener implements Listener {
         Location location = block.getLocation().add(0.5, 0.5, 0.5);
         Interaction interaction = Util.getInteraction(location);
         if (interaction == null) return;
-        if (InteractionPDCUtil.isSender(interaction)) {
+        if (WirelessPDCUtil.isSender(interaction)) {
             this.summonSenderParticles(interaction);
-            for (Location receiverLoc : InteractionPDCUtil.getReceivers(interaction)) {
+            for (Location receiverLoc : WirelessPDCUtil.getReceivers(interaction)) {
                 Block receiverBlock = receiverLoc.getBlock();
                 this.summonReceiverParticles(receiverBlock.getLocation().add(0.5, 0.7, 0.5));
                 if (receiverBlock.getType() != Material.REDSTONE_WIRE) continue;
@@ -31,7 +31,7 @@ public class RedstoneListener implements Listener {
                 redstoneWire.setPower(event.getNewCurrent());
                 receiverBlock.setBlockData(redstoneWire);
             }
-        } else if (InteractionPDCUtil.isReceiver(interaction)
+        } else if (WirelessPDCUtil.isReceiver(interaction)
                 && event.getNewCurrent() <= event.getOldCurrent()) {
             event.setNewCurrent(event.getOldCurrent());
         }

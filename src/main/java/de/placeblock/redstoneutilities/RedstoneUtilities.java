@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities;
-import de.placeblock.redstoneutilities.blockentity.BlockEntityHandler;
+import de.placeblock.redstoneutilities.blockentity.BlockEntityTypeRegistry;
+import de.placeblock.redstoneutilities.blockentity.BlockEntityListener;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityUtil;
 import de.placeblock.redstoneutilities.blockentity.EntityStructureUtil;
 import de.placeblock.redstoneutilities.wireless.Wireless;
@@ -16,10 +17,11 @@ public class RedstoneUtilities extends JavaPlugin {
     @Getter
     private static RedstoneUtilities instance;
 
-    private BlockEntityHandler blockEntityHandler;
+    private BlockEntityListener blockEntityListener;
 
     private BlockEntityUtil blockEntityUtil;
     private EntityStructureUtil entityStructureUtil;
+    private BlockEntityTypeRegistry blockEntityTypeRegistry;
 
     private Wireless wireless;
 
@@ -27,10 +29,11 @@ public class RedstoneUtilities extends JavaPlugin {
     public void onEnable() {
         RedstoneUtilities.instance = this;
 
-        this.blockEntityHandler = new BlockEntityHandler();
+        this.blockEntityListener = new BlockEntityListener();
         this.blockEntityUtil = new BlockEntityUtil();
         this.entityStructureUtil = new EntityStructureUtil();
-        this.getServer().getPluginManager().registerEvents(this.blockEntityHandler, this);
+        this.blockEntityTypeRegistry = new BlockEntityTypeRegistry();
+        this.getServer().getPluginManager().registerEvents(this.blockEntityListener, this);
 
         this.wireless = new Wireless(this);
         this.wireless.setup();

@@ -3,7 +3,7 @@ package de.placeblock.redstoneutilities.wireless.listener;
 import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
-import de.placeblock.redstoneutilities.wireless.InteractionPDCUtil;
+import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
 import de.placeblock.redstoneutilities.wireless.Wireless;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,16 +25,16 @@ public class BlockBreakListener implements Listener {
         Entity entity = event.getEntity();
         if (!(event.getDamager() instanceof Player player)
             || !(entity instanceof Interaction interaction)
-            || (!InteractionPDCUtil.isReceiver(interaction) && !InteractionPDCUtil.isSender(interaction))) return;
+            || (!WirelessPDCUtil.isReceiver(interaction) && !WirelessPDCUtil.isSender(interaction))) return;
 
         Wireless wireless = RedstoneUtilities.getInstance().getWireless();
 
-        if (InteractionPDCUtil.isReceiver(interaction)) {
-            List<Location> senders = InteractionPDCUtil.getSenders(interaction);
+        if (WirelessPDCUtil.isReceiver(interaction)) {
+            List<Location> senders = WirelessPDCUtil.getSenders(interaction);
             for (Location sender : senders) {
                 Interaction senderInteraction = Util.getInteraction(sender);
-                if (senderInteraction == null || !InteractionPDCUtil.isSender(senderInteraction)) continue;
-                InteractionPDCUtil.removeReceiver(senderInteraction, entity.getLocation());
+                if (senderInteraction == null || !WirelessPDCUtil.isSender(senderInteraction)) continue;
+                WirelessPDCUtil.removeReceiver(senderInteraction, entity.getLocation());
                 this.giveRedstone(player, sender, interaction.getLocation());
             }
             RedstoneWire redstoneWire = Util.getRedstone(interaction);
@@ -42,12 +42,12 @@ public class BlockBreakListener implements Listener {
                 redstoneWire.setPower(0);
                 interaction.getLocation().getBlock().setBlockData(redstoneWire);
             }
-        } else if (InteractionPDCUtil.isSender(interaction)) {
-            List<Location> receivers = InteractionPDCUtil.getReceivers(interaction);
+        } else if (WirelessPDCUtil.isSender(interaction)) {
+            List<Location> receivers = WirelessPDCUtil.getReceivers(interaction);
             for (Location receiver : receivers) {
                 Interaction receiverInteraction = Util.getInteraction(receiver);
-                if (receiverInteraction == null || !InteractionPDCUtil.isReceiver(receiverInteraction)) continue;
-                InteractionPDCUtil.removeSender(receiverInteraction, entity.getLocation().getBlock().getLocation());
+                if (receiverInteraction == null || !WirelessPDCUtil.isReceiver(receiverInteraction)) continue;
+                WirelessPDCUtil.removeSender(receiverInteraction, entity.getLocation().getBlock().getLocation());
                 this.giveRedstone(player, interaction.getLocation(), receiver);
             }
         }

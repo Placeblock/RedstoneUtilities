@@ -2,7 +2,7 @@ package de.placeblock.redstoneutilities.autocrafting;
 
 import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
-import de.placeblock.redstoneutilities.blockentity.BlockEntityHandler;
+import de.placeblock.redstoneutilities.blockentity.BlockEntityListener;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -15,13 +15,13 @@ public class AutoCrafting {
     }
 
     public void registerCrafterBlock() {
-        BlockEntityHandler.Entry entry = new BlockEntityHandler.Entry(
+        BlockEntityListener.Entry entry = new BlockEntityListener.Entry(
                 Items.AUTOCRAFTER_ITEM,
                 this::placeAutoCrafter,
                 true,
                 new ArrayList<>()
         );
-        RedstoneUtilities.getInstance().getBlockEntityHandler().register(entry);
+        RedstoneUtilities.getInstance().getBlockEntityListener().register(entry);
     }
 
     public boolean placeAutoCrafter(Player player, Block block) {

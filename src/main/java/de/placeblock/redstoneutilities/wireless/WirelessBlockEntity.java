@@ -1,13 +1,18 @@
 package de.placeblock.redstoneutilities.wireless;
 
-import de.placeblock.redstoneutilities.BlockEntityType;
+import de.placeblock.redstoneutilities.Items;
+import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
@@ -15,19 +20,21 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 import java.util.List;
 
+@Getter
 public abstract class WirelessBlockEntity extends BlockEntity {
     public static final Vector TYPE_ENTITY_VEC = new Vector(0.26, 0, 0);
 
-    private final Material wirelessType;
+    private Material wirelessType;
     private final List<ItemDisplay> typeEntities;
 
-    public WirelessBlockEntity(BlockEntityType type, Interaction interaction, List<Entity> entityStructure, Material wirelessType, List<ItemDisplay> typeEntities) {
+    public WirelessBlockEntity(BlockEntityType<?> type, Interaction interaction, List<Entity> entityStructure, Material wirelessType, List<ItemDisplay> typeEntities) {
         super(type, interaction, entityStructure);
         this.wirelessType = wirelessType;
         this.typeEntities = typeEntities;
     }
 
-    public void setTypeEntities(Material type) {
+    public void setWirelessType(Material type) {
+        this.wirelessType = type;
         this.removeTypeEntities();
         this.spawnTypeEntities(type);
     }
@@ -55,7 +62,27 @@ public abstract class WirelessBlockEntity extends BlockEntity {
         this.typeEntities.clear();
     }
 
-    public abstract void drop();
 
+    @Override
+    public void onInteract(PlayerInteractAtEntityEvent event) {
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        Wireless wireless = RedstoneUtilities.getInstance().getWireless();
+        if (item.isSimilar(Items.CONNECTOR_ITEM)) {
+            this.handleConnectorInteraction(player);
+        } else if (wireless.isInfometer(item)) {
+            this.handleInfometerInteraction(player);
+        } else {
+            this.setWirelessType(item.getType());
+        }
+    }
 
+    @Override
+    public void store() {
+        super.store();
+    }
+
+    protected abstract void handleInfometerInteraction(Player player);
+
+    protected abstract void handleConnectorInteraction(Player player);
 }

@@ -9,14 +9,12 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import java.util.List;
 
-public class InteractionPDCUtil {
+public class WirelessPDCUtil {
 
     public static final NamespacedKey RECEIVERS_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "receivers");
     public static final NamespacedKey SENDERS_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "senders");
-    public static final NamespacedKey RECEIVER_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "receiver");
     public static final NamespacedKey NAME_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "name");
     public static final NamespacedKey MATERIAL_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "material");
-    public static final NamespacedKey SENDER_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "sender");
 
     public static List<Location> getReceivers(Interaction interaction) {
         return PDCLocationUtil.getLocations(interaction, RECEIVERS_KEY);
@@ -41,16 +39,6 @@ public class InteractionPDCUtil {
         PDCLocationUtil.removeLocation(interaction, location, SENDERS_KEY);
     }
 
-    public static void markReceiver(Interaction interaction) {
-        PersistentDataContainer pdc = interaction.getPersistentDataContainer();
-        pdc.set(RECEIVER_KEY, PersistentDataType.BOOLEAN, true);
-    }
-
-    public static void markSender(Interaction interaction) {
-        PersistentDataContainer pdc = interaction.getPersistentDataContainer();
-        pdc.set(SENDER_KEY, PersistentDataType.BOOLEAN, true);
-    }
-
     public static void setName(Interaction interaction, String name) {
         PersistentDataContainer pdc = interaction.getPersistentDataContainer();
         pdc.set(NAME_KEY, PersistentDataType.STRING, name);
@@ -71,16 +59,6 @@ public class InteractionPDCUtil {
         PersistentDataContainer pdc = interaction.getPersistentDataContainer();
         String materialName = pdc.get(MATERIAL_KEY, PersistentDataType.STRING);
         return materialName == null ? Material.CALIBRATED_SCULK_SENSOR : Material.valueOf(materialName);
-    }
-
-    public static boolean isReceiver(Interaction interaction) {
-        PersistentDataContainer pdc = interaction.getPersistentDataContainer();
-        return pdc.has(RECEIVER_KEY);
-    }
-
-    public static boolean isSender(Interaction interaction) {
-        PersistentDataContainer pdc = interaction.getPersistentDataContainer();
-        return pdc.has(SENDER_KEY);
     }
 
 }

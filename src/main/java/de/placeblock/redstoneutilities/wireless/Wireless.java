@@ -1,8 +1,6 @@
 package de.placeblock.redstoneutilities.wireless;
 
 import de.placeblock.redstoneutilities.*;
-import de.placeblock.redstoneutilities.blockentity.BlockEntityHandler;
-import de.placeblock.redstoneutilities.blockentity.BlockEntityUtil;
 import de.placeblock.redstoneutilities.blockentity.EntityStructureUtil;
 import de.placeblock.redstoneutilities.wireless.listener.BlockBreakListener;
 import de.placeblock.redstoneutilities.wireless.listener.BlockInteractListener;
@@ -23,8 +21,6 @@ import org.bukkit.util.Consumer;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 public class Wireless {
@@ -52,86 +48,23 @@ public class Wireless {
         pluginManager.registerEvents(this.connectorHandler, this.plugin);
         this.textInputHandler = new TextInputHandler();
         pluginManager.registerEvents(this.textInputHandler, this.plugin);
-
-        this.registerSenderBlock();
-        this.registerReceiverBlock();
-    }
-
-    private void registerSenderBlock() {
-        BlockEntityHandler.Entry entry = new BlockEntityHandler.Entry(
-                Items.SENDER_ITEM,
-                this::placeSender,
-                true,
-                List.of(Material.REDSTONE_WIRE)
-        );
-        this.plugin.getBlockEntityHandler().register(entry);
-    }
-
-    private void registerReceiverBlock() {
-        BlockEntityHandler.Entry entry = new BlockEntityHandler.Entry(
-                Items.RECEIVER_ITEM,
-                this::placeReceiver,
-                true,
-                List.of(Material.REDSTONE_WIRE)
-        );
-        this.plugin.getBlockEntityHandler().register(entry);
-    }
-
-    public void addReceiverToSender(Location sender, Location receiver) {
-        Interaction entity = Util.getInteraction(sender);
-        if (entity == null) return;
-        if (!InteractionPDCUtil.isSender(entity)) return;
-        InteractionPDCUtil.addReceiver(entity, receiver);
-    }
-
-    public void addSenderToReceiver(Location sender, Location receiver) {
-        Interaction entity = Util.getInteraction(receiver);
-        if (entity == null) return;
-        if (!InteractionPDCUtil.isReceiver(entity)) return;
-        InteractionPDCUtil.addSender(entity, sender);
     }
 
     public boolean placeSender(Player player, Block block) {
         Location location = block.getLocation();
         if (this.plugin.getBlockEntityUtil().isBlockEntity(block)) return false;
-        this.spawnEntities(location, Material.SCULK_SHRIEKER, InteractionPDCUtil::markSender);
+        this.spawnEntities(location, Material.SCULK_SHRIEKER, WirelessPDCUtil::markSender);
         return true;
     }
 
     public boolean placeReceiver(Player player, Block block) {
         Location location = block.getLocation();
         if (this.plugin.getBlockEntityUtil().isBlockEntity(block)) return false;
-        this.spawnEntities(location, Material.CALIBRATED_SCULK_SENSOR, InteractionPDCUtil::markReceiver);
+        this.spawnEntities(location, Material.CALIBRATED_SCULK_SENSOR, WirelessPDCUtil::markReceiver);
         player.sendMessage(Messages.PLACE_RECEIVER);
         return true;
     }
 
-
-    private void spawnEntities(Location location, Material material, Consumer<Interaction> consumer) {
-        World world = location.getWorld();
-
-        Location displayLocation = location.clone().add(0.25, 0, 0.25);
-        Location interactionLocation = location.clone().add(0.5, 0, 0.5);
-
-        Interaction interaction = world.spawn(interactionLocation, Interaction.class, i -> {
-            i.setInteractionWidth(0.6F);
-            i.setInteractionHeight(0.4F);
-            consumer.accept(i);
-        });
-        world.spawn(displayLocation, BlockDisplay.class, bd -> {
-            bd.setBlock(material.createBlockData());
-            bd.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(0.5F, 0.5F, 0.5F), new AxisAngle4f()));
-            EntityStructureUtil entityStructureUtil = this.plugin.getEntityStructureUtil();
-            entityStructureUtil.addEntity(interaction, bd.getUniqueId());
-        });
-    }
-
-    public void setPower(Interaction interaction, int power) {
-        RedstoneWire redstoneWire = Util.getRedstone(interaction);
-        if (redstoneWire == null) return;
-        redstoneWire.setPower(power);
-        interaction.getLocation().getBlock().setBlockData(redstoneWire);
-    }
 
     public boolean isInfometer(ItemStack item) {
         return item.getType() == Items.INFOMETER_MATERIAL

@@ -1,5 +1,8 @@
 package de.placeblock.redstoneutilities;
 
+import de.placeblock.redstoneutilities.blockentity.BlockEntity;
+import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
+import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;
@@ -47,7 +50,7 @@ public class Messages {
     public static final Component RENAMED = Component.text("Du hast ").color(RedstoneUtilities.INFERIOR_COLOR)
             .append(Component.text("den Empfänger umbenannt! ").color(RedstoneUtilities.PRIMARY_COLOR));
 
-    public static Component getInfometerReceiver(List<Location> senders, String name) {
+    public static Component getInfometerReceiver(List<SenderBlockEntity> senders, String name) {
         return Component.text("Empfänger (" + name + ")")
                 .color(RedstoneUtilities.PRIMARY_COLOR)
                 .decorate(TextDecoration.BOLD)
@@ -56,9 +59,9 @@ public class Messages {
                         .decoration(TextDecoration.BOLD, false)
                         .color(RedstoneUtilities.PRIMARY_COLOR))
                 .append(Component.newline())
-                .append(formatLocations(senders));
+                .append(formatLocations(senders.stream().map(BlockEntity::getCenterLocation).toList()));
     }
-    public static Component getInfometerSender(List<Location> receivers) {
+    public static Component getInfometerSender(List<ReceiverBlockEntity> receivers) {
         return Component.text("Sender")
                 .color(RedstoneUtilities.PRIMARY_COLOR)
                 .decorate(TextDecoration.BOLD)
@@ -67,7 +70,7 @@ public class Messages {
                         .decoration(TextDecoration.BOLD, false)
                         .color(RedstoneUtilities.PRIMARY_COLOR))
                 .append(Component.newline())
-                .append(formatLocations(receivers));
+                .append(formatLocations(receivers.stream().map(BlockEntity::getCenterLocation).toList()));
     }
 
     private static Component formatLocations(List<Location> locations) {

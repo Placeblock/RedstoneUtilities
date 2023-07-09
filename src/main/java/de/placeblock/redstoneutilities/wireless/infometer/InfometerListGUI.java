@@ -3,7 +3,7 @@ package de.placeblock.redstoneutilities.wireless.infometer;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.gui.GUI;
-import de.placeblock.redstoneutilities.wireless.InteractionPDCUtil;
+import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
 import de.placeblock.redstoneutilities.wireless.PDCLocationUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -92,20 +92,19 @@ public class InfometerListGUI extends GUI {
         for (int i = 0; i < itemSlots && i+itemSlots*this.page < this.items.size(); i++) {
             this.inv.setItem(i, this.items.get(i+itemSlots*this.page));
         }
-        this.update();
     }
 
     private void initializeItems(ItemStack item) {
-        List<Location> receivers = ItemPDCUtil.getReceivers(item);
+        List<Location> receivers = InfometerPDCUtil.getReceivers(item);
         List<ItemStack> items = new ArrayList<>();
         for (Location receiver : receivers) {
             Interaction receiverInteraction = Util.getInteraction(receiver);
             if (receiverInteraction == null) {
-                ItemPDCUtil.removeReceiver(item, receiver);
+                InfometerPDCUtil.removeReceiver(item, receiver);
                 continue;
             }
-            Material material = InteractionPDCUtil.getType(receiverInteraction);
-            String name = InteractionPDCUtil.getName(receiverInteraction);
+            Material material = WirelessPDCUtil.getType(receiverInteraction);
+            String name = WirelessPDCUtil.getName(receiverInteraction);
             items.add(this.getItem(name, material, receiver));
         }
         this.items = items;

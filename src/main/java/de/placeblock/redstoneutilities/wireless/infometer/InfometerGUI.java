@@ -4,7 +4,7 @@ import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.gui.GUI;
-import de.placeblock.redstoneutilities.wireless.InteractionPDCUtil;
+import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
 import de.placeblock.redstoneutilities.wireless.Wireless;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -47,8 +47,8 @@ public class InfometerGUI extends GUI {
     }
 
     private ItemStack getReceiverItem() {
-        String name = InteractionPDCUtil.getName(this.interaction);
-        Material material = InteractionPDCUtil.getType(this.interaction);
+        String name = WirelessPDCUtil.getName(this.interaction);
+        Material material = WirelessPDCUtil.getType(this.interaction);
         return Util.getItem(material, Component.text(name));
     }
 
@@ -78,7 +78,7 @@ public class InfometerGUI extends GUI {
         } else if (item.isSimilar(RENAME_ITEM)) {
             this.inv.close();
             wireless.getTextInputHandler().addPlayer(this.player, (text) -> {
-                InteractionPDCUtil.setName(this.interaction, text);
+                WirelessPDCUtil.setName(this.interaction, text);
                 player.sendMessage(Messages.RENAMED);
             });
         }

@@ -9,7 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public class ItemPDCUtil {
+public class InfometerPDCUtil {
     public static final NamespacedKey RECEIVERS_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "receivers");
 
     public static void addReceiver(ItemStack item, Location location) {
