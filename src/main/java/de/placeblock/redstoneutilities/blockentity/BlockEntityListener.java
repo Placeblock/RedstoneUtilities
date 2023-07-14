@@ -32,7 +32,7 @@ public class BlockEntityListener implements Listener {
         Player player = event.getPlayer();
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), event.getBlock().getLocation(), blockEntityType);
-        blockEntityType.getOnPlace().apply(player, targetLoc.getBlock());
+        blockEntityType.onPlace(player, targetLoc.getBlock());
     }
 
     @EventHandler
@@ -55,7 +55,7 @@ public class BlockEntityListener implements Listener {
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), placedBlock.getLocation(), blockEntityType);
 
-        boolean accept = blockEntityType.getOnPlace().apply(player, targetLoc.getBlock());
+        boolean accept = blockEntityType.onPlace(player, targetLoc.getBlock());
         if (!accept) return;
 
         if (blockEntityType.isRemoveItem()) {

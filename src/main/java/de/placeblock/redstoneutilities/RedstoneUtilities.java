@@ -1,11 +1,11 @@
 package de.placeblock.redstoneutilities;
-import de.placeblock.redstoneutilities.blockentity.BlockEntityTypeRegistry;
-import de.placeblock.redstoneutilities.blockentity.BlockEntityListener;
-import de.placeblock.redstoneutilities.blockentity.BlockEntityUtil;
-import de.placeblock.redstoneutilities.blockentity.EntityStructureUtil;
+import de.placeblock.redstoneutilities.blockentity.*;
 import de.placeblock.redstoneutilities.wireless.Wireless;
+import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntityType;
+import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntityType;
 import lombok.Getter;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -19,29 +19,34 @@ public class RedstoneUtilities extends JavaPlugin {
 
     private BlockEntityListener blockEntityListener;
 
-    private BlockEntityUtil blockEntityUtil;
-    private EntityStructureUtil entityStructureUtil;
     private BlockEntityTypeRegistry blockEntityTypeRegistry;
-
+    private BlockEntityRegistry blockEntityRegistry;
+    private TextInputHandler textInputHandler;
     private Wireless wireless;
 
     @Override
     public void onEnable() {
         RedstoneUtilities.instance = this;
 
-        this.blockEntityListener = new BlockEntityListener();
-        this.blockEntityUtil = new BlockEntityUtil();
-        this.entityStructureUtil = new EntityStructureUtil();
+        this.blockEntityListener = new BlockEntityListener(this);
         this.blockEntityTypeRegistry = new BlockEntityTypeRegistry();
-        this.getServer().getPluginManager().registerEvents(this.blockEntityListener, this);
+        this.blockEntityRegistry = new BlockEntityRegistry();
+        this.wireless = new Wireless();
+        this.wireless.setup(this);
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(this.blockEntityListener, this);
+        this.textInputHandler = new TextInputHandler();
+        pluginManager.registerEvents(this.textInputHandler, this);
 
-        this.wireless = new Wireless(this);
-        this.wireless.setup();
+        this.blockEntityTypeRegistry.register(new ReceiverBlockEntityType(this, "WIRELESS_RECEIVER"));
+        this.blockEntityTypeRegistry.register(new SenderBlockEntityType(this, "WIRELESS_SENDER"));
     }
 
     @Override
     public void onDisable() {
-        this.wireless.disable();
+        for (BlockEntityType<?> blockEntityType : this.blockEntityTypeRegistry.getBlockEntityTypes().values()) {
+            blockEntityType.disable();
+        }
     }
 
 }

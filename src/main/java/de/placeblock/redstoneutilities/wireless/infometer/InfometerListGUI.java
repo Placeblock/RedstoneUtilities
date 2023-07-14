@@ -2,9 +2,11 @@ package de.placeblock.redstoneutilities.wireless.infometer;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
+import de.placeblock.redstoneutilities.blockentity.BlockEntityRegistry;
 import de.placeblock.redstoneutilities.gui.GUI;
 import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
 import de.placeblock.redstoneutilities.wireless.PDCLocationUtil;
+import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -165,9 +167,10 @@ public class InfometerListGUI extends GUI {
             }
         }
         Location location = PDCLocationUtil.getLocation(item.getItemMeta(), LOCATION_KEY);
-        Interaction interaction = Util.getInteraction(location);
+        BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
+        ReceiverBlockEntity receiver = blockEntityRegistry.get(location, ReceiverBlockEntity.class);
         this.inv.close();
-        InfometerGUI infometerGUI = new InfometerGUI(this.player, interaction);
+        InfometerGUI infometerGUI = new InfometerGUI(this.player, receiver);
         infometerGUI.setup();
         infometerGUI.register();
         infometerGUI.show();

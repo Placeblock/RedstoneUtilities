@@ -1,13 +1,14 @@
 package de.placeblock.redstoneutilities.wireless;
 
 import de.placeblock.redstoneutilities.Items;
-import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.data.type.RedstoneWire;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.ItemDisplay;
@@ -21,13 +22,13 @@ import org.joml.Vector3f;
 import java.util.List;
 
 @Getter
-public abstract class WirelessBlockEntity extends BlockEntity {
+public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, BT extends WirelessBlockEntityType<B>> extends BlockEntity<B, BT> {
     public static final Vector TYPE_ENTITY_VEC = new Vector(0.26, 0, 0);
 
     private Material wirelessType;
     private final List<ItemDisplay> typeEntities;
 
-    public WirelessBlockEntity(BlockEntityType<?> type, Interaction interaction, List<Entity> entityStructure, Material wirelessType, List<ItemDisplay> typeEntities) {
+    public WirelessBlockEntity(BlockEntityType<B> type, Interaction interaction, List<Entity> entityStructure, Material wirelessType, List<ItemDisplay> typeEntities) {
         super(type, interaction, entityStructure);
         this.wirelessType = wirelessType;
         this.typeEntities = typeEntities;
@@ -62,15 +63,19 @@ public abstract class WirelessBlockEntity extends BlockEntity {
         this.typeEntities.clear();
     }
 
+    public int getPower() {
+        RedstoneWire wire = Util.getRedstone(this.interaction);
+        if (wire == null) return -1;
+        return wire.getPower();
+    }
 
     @Override
     public void onInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
-        Wireless wireless = RedstoneUtilities.getInstance().getWireless();
         if (item.isSimilar(Items.CONNECTOR_ITEM)) {
             this.handleConnectorInteraction(player);
-        } else if (wireless.isInfometer(item)) {
+        } else if (Items.isInfometer(item)) {
             this.handleInfometerInteraction(player);
         } else {
             this.setWirelessType(item.getType());

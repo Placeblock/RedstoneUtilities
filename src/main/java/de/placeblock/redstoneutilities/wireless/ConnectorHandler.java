@@ -77,6 +77,12 @@ public class ConnectorHandler implements Listener {
         }
     }
 
+    public void giveCost(Player player, Location sender, Location receiver) {
+        int cost = this.getCost(sender, receiver);
+        player.getInventory().addItem(new ItemStack(Material.REDSTONE, cost));
+        player.sendMessage(Messages.REDSTONE_RECEIVED);
+    }
+
     public void stop() {
         if (this.actionBarTask == null) return;
         this.actionBarTask.cancel();

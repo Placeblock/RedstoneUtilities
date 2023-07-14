@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.blockentity;
 
+import lombok.Getter;
 import org.bukkit.entity.Interaction;
 import org.bukkit.inventory.ItemStack;
 
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BlockEntityTypeRegistry {
+    @Getter
     private final Map<String, BlockEntityType<?>> blockEntityTypes = new HashMap<>();
 
     public void register(BlockEntityType<?> type) {

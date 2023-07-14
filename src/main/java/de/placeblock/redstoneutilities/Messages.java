@@ -32,9 +32,6 @@ public class Messages {
     public static final Component REDSTONE_RECEIVED = Component.text("Dir wurde das ").color(RedstoneUtilities.INFERIOR_COLOR)
             .append(Component.text("bezahlte Redstone zurückerstattet! ").color(RedstoneUtilities.PRIMARY_COLOR));
 
-    public static final Component ONLY_RECEIVER_INFOMETER = Component.text("Du kannst ").color(RedstoneUtilities.INFERIOR_COLOR)
-            .append(Component.text("nur Empfänger hinzufügen! ").color(RedstoneUtilities.PRIMARY_COLOR));
-
     public static final Component REMOVED_FROM_INFOMETER = Component.text("Empfänger ").color(RedstoneUtilities.INFERIOR_COLOR)
             .append(Component.text("aus Infometer entfernt! ").color(RedstoneUtilities.PRIMARY_COLOR));
 

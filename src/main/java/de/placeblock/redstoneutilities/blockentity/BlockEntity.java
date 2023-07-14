@@ -8,18 +8,18 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class BlockEntity {
+public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends BlockEntityType<B>> {
     private static final NamespacedKey TYPE_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "block_entity_type");
 
-    protected final BlockEntityType type;
+    protected final BlockEntityType<B> type;
     protected final Interaction interaction;
     protected final List<Entity> entityStructure;
 
@@ -27,11 +27,11 @@ public abstract class BlockEntity {
         this.interaction.getPersistentDataContainer().set(TYPE_KEY, PersistentDataType.STRING, this.type.getName());
     }
 
-    public void remove() {
-        this.remove(true);
+    public void remove(Player player) {
+        this.remove(player, true);
     }
 
-    public void remove(boolean drop) {
+    public void remove(Player player, boolean drop) {
         for (Entity entity : this.entityStructure) {
             entity.remove();
         }

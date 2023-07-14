@@ -2,15 +2,14 @@ package de.placeblock.redstoneutilities.wireless.infometer;
 
 import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.TextInputHandler;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.gui.GUI;
-import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
 import de.placeblock.redstoneutilities.wireless.Wireless;
+import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.data.type.RedstoneWire;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -27,11 +26,11 @@ public class InfometerGUI extends GUI {
         OFF_ITEM = Util.getItem(Material.RED_WOOL, Component.text("Aktuell: AUS"));
     }
 
-    private final Interaction interaction;
+    private final ReceiverBlockEntity receiver;
 
-    public InfometerGUI(Player player, Interaction interaction) {
+    public InfometerGUI(Player player, ReceiverBlockEntity receiver) {
         super(player);
-        this.interaction = interaction;
+        this.receiver = receiver;
     }
 
     @Override
@@ -47,15 +46,13 @@ public class InfometerGUI extends GUI {
     }
 
     private ItemStack getReceiverItem() {
-        String name = WirelessPDCUtil.getName(this.interaction);
-        Material material = WirelessPDCUtil.getType(this.interaction);
+        String name = this.receiver.getWirelessName();
+        Material material = this.receiver.getWirelessType();
         return Util.getItem(material, Component.text(name));
     }
 
     private void setToggleItem() {
-        RedstoneWire redstoneWire = Util.getRedstone(this.interaction);
-        if (redstoneWire == null) return;
-        if (redstoneWire.getPower() > 0) {
+        if (this.receiver.getPower() > 0) {
             this.inv.setItem(6, ON_ITEM);
         } else {
             this.inv.setItem(6, OFF_ITEM);
@@ -70,15 +67,16 @@ public class InfometerGUI extends GUI {
         if (item == null) return;
         Wireless wireless = RedstoneUtilities.getInstance().getWireless();
         if (item.isSimilar(ON_ITEM)) {
-            wireless.setPower(this.interaction, 0);
+            this.receiver.setPower(0);
             this.setToggleItem();
         } else if (item.isSimilar(OFF_ITEM)) {
-            wireless.setPower(this.interaction, 15);
+            this.receiver.setPower(15);
             this.setToggleItem();
         } else if (item.isSimilar(RENAME_ITEM)) {
             this.inv.close();
-            wireless.getTextInputHandler().addPlayer(this.player, (text) -> {
-                WirelessPDCUtil.setName(this.interaction, text);
+            TextInputHandler textInputHandler = RedstoneUtilities.getInstance().getTextInputHandler();
+            textInputHandler.addPlayer(this.player, (text) -> {
+                this.receiver.setWirelessName(text);
                 player.sendMessage(Messages.RENAMED);
             });
         }

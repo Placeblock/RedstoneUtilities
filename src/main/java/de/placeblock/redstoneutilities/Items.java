@@ -94,4 +94,9 @@ public class Items {
         ));
         AUTOCRAFTER_ITEM = autocrafterItem;
     }
+
+    public static boolean isInfometer(ItemStack item) {
+        return item.getType() == Items.INFOMETER_MATERIAL
+                && Items.REDSTONE_INFOMETER_DISPLAYNAME.equals(item.getItemMeta().displayName());
+    }
 }
