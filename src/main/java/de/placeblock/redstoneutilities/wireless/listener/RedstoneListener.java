@@ -20,7 +20,7 @@ public class RedstoneListener implements Listener {
         Block block = event.getBlock();
         if (block.getType() != Material.REDSTONE_WIRE) return;
         Location location = block.getLocation().add(0.5, 0.5, 0.5);
-        BlockEntity blockEntity = this.plugin.getBlockEntityRegistry().get(location);
+        BlockEntity<?, ?> blockEntity = this.plugin.getBlockEntityRegistry().get(location);
         if (blockEntity instanceof SenderBlockEntity senderBlockEntity) {
             senderBlockEntity.summonParticles();
             for (ReceiverBlockEntity receiver : senderBlockEntity.getReceivers()) {

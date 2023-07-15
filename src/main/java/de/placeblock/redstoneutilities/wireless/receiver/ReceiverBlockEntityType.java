@@ -3,32 +3,34 @@ package de.placeblock.redstoneutilities.wireless.receiver;
 import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.blockentity.BlockEntityRegistry;
 import de.placeblock.redstoneutilities.wireless.WirelessBlockEntityType;
+import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
+import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntity;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 
-public class ReceiverBlockEntityType extends WirelessBlockEntityType<ReceiverBlockEntity> {
+import java.util.ArrayList;
+import java.util.List;
+
+public class ReceiverBlockEntityType extends WirelessBlockEntityType<ReceiverBlockEntity, ReceiverBlockEntityType> {
     public ReceiverBlockEntityType(RedstoneUtilities plugin, String name) {
         super(plugin, name, Items.RECEIVER_ITEM);
     }
 
+
     @Override
-    public ReceiverBlockEntity loadBlockEntity(Interaction interaction) {
-        return null;
+    public ReceiverBlockEntity getBlockEntity(Interaction interaction) {
+        return new ReceiverBlockEntity(this, interaction);
     }
 
     @Override
-    public boolean onPlace(Player player, Block block) {
-        this.spawnEntities(block.getLocation(), Material.CALIBRATED_SCULK_SENSOR);
+    public Interaction onPlace(Player player, Block block) {
         player.sendMessage(Messages.PLACE_RECEIVER);
-        return true;
-    }
-
-    @Override
-    public ReceiverBlockEntity spawn(Block block) {
-        return null;
+        return this.spawnEntities(block.getLocation(), Material.CALIBRATED_SCULK_SENSOR);
     }
 
     @Override

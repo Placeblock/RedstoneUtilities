@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.wireless;
 
+import de.placeblock.redstoneutilities.pdc.PDCLocationUtil;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,6 +40,14 @@ public class WirelessPDCUtil {
         PDCLocationUtil.removeLocation(interaction, location, SENDERS_KEY);
     }
 
+    public static void setSenders(Interaction interaction, List<Location> locations) {
+        PDCLocationUtil.setLocations(interaction, locations, SENDERS_KEY);
+    }
+
+    public static void setReceivers(Interaction interaction, List<Location> locations) {
+        PDCLocationUtil.setLocations(interaction, locations, RECEIVERS_KEY);
+    }
+
     public static void setName(Interaction interaction, String name) {
         PersistentDataContainer pdc = interaction.getPersistentDataContainer();
         pdc.set(NAME_KEY, PersistentDataType.STRING, name);
@@ -51,6 +60,7 @@ public class WirelessPDCUtil {
     }
 
     public static void setType(Interaction interaction, Material mat) {
+        if (mat == null) return;
         PersistentDataContainer pdc = interaction.getPersistentDataContainer();
         pdc.set(MATERIAL_KEY, PersistentDataType.STRING, mat.name());
     }

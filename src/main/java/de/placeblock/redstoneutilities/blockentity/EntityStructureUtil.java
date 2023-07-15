@@ -2,6 +2,7 @@ package de.placeblock.redstoneutilities.blockentity;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.pdc.UUIDDataType;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
@@ -22,7 +23,7 @@ public class EntityStructureUtil {
     }
 
     public static void addEntity(Interaction blockEntity, UUID uuid) {
-        List<UUID> uuids = getEntities(blockEntity);
+        List<UUID> uuids = getEntityUUIDs(blockEntity);
         if (uuids == null) uuids = new ArrayList<>();
         uuids.add(uuid);
         setEntities(blockEntity, uuids);
@@ -33,14 +34,14 @@ public class EntityStructureUtil {
     }
 
     public static boolean removeEntity(Interaction blockEntity, UUID uuid) {
-        List<UUID> uuids = getEntities(blockEntity);
+        List<UUID> uuids = getEntityUUIDs(blockEntity);
         if (uuids == null) return false;
         uuids.remove(uuid);
         setEntities(blockEntity, uuids);
         return true;
     }
 
-    public static List<UUID> getEntities(Interaction blockEntity) {
+    public static List<UUID> getEntityUUIDs(Interaction blockEntity) {
         PersistentDataContainer pdc = blockEntity.getPersistentDataContainer();
         if (!pdc.has(ENTITIES_KEY)) return null;
         PersistentDataContainer[] pdcs = pdc.get(ENTITIES_KEY, PersistentDataType.TAG_CONTAINER_ARRAY);
@@ -50,6 +51,32 @@ public class EntityStructureUtil {
             uuids.add(getUUID(uuidPDC));
         }
         return uuids;
+    }
+
+    public static List<Entity> getEntities(Interaction blockEntity) {
+        List<UUID> entityUUIDs = getEntityUUIDs(blockEntity);
+        if (entityUUIDs == null) return null;
+        List<Entity> entities = new ArrayList<>();
+        for (UUID entityUUID : entityUUIDs) {
+            Entity entity = Bukkit.getEntity(entityUUID);
+            if (entity == null) continue;
+            entities.add(entity);
+        }
+        return entities;
+    }
+
+    public static List<Entity> getEntities(Interaction blockEntity, String type) {
+        List<UUID> entityUUIDs = getEntityUUIDs(blockEntity);
+        if (entityUUIDs == null) return null;
+        List<Entity> typeEntities = new ArrayList<>();
+        for (UUID entityUUID : entityUUIDs) {
+            Entity entity = Bukkit.getEntity(entityUUID);
+            if (entity == null) continue;
+            if (type.equals(BlockEntityTypeRegistry.getType(entity))) {
+                typeEntities.add(entity);
+            }
+        }
+        return typeEntities;
     }
 
     public static void setEntities(Interaction blockEntity, List<UUID> uuids) {

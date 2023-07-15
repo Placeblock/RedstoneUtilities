@@ -4,8 +4,7 @@ import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityRegistry;
 import de.placeblock.redstoneutilities.gui.GUI;
-import de.placeblock.redstoneutilities.wireless.WirelessPDCUtil;
-import de.placeblock.redstoneutilities.wireless.PDCLocationUtil;
+import de.placeblock.redstoneutilities.pdc.PDCLocationUtil;
 import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -14,7 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -99,15 +97,16 @@ public class InfometerListGUI extends GUI {
     private void initializeItems(ItemStack item) {
         List<Location> receivers = InfometerPDCUtil.getReceivers(item);
         List<ItemStack> items = new ArrayList<>();
-        for (Location receiver : receivers) {
-            Interaction receiverInteraction = Util.getInteraction(receiver);
-            if (receiverInteraction == null) {
-                InfometerPDCUtil.removeReceiver(item, receiver);
+        BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
+        for (Location receiverLoc : receivers) {
+            ReceiverBlockEntity rbe = blockEntityRegistry.get(receiverLoc, ReceiverBlockEntity.class);
+            if (rbe == null) {
+                InfometerPDCUtil.removeReceiver(item, receiverLoc);
                 continue;
             }
-            Material material = WirelessPDCUtil.getType(receiverInteraction);
-            String name = WirelessPDCUtil.getName(receiverInteraction);
-            items.add(this.getItem(name, material, receiver));
+            Material material = rbe.getWirelessType();
+            String name = rbe.getWirelessName();
+            items.add(this.getItem(name, material, receiverLoc));
         }
         this.items = items;
     }
@@ -116,11 +115,12 @@ public class InfometerListGUI extends GUI {
         Component title = Component.text(name + " (Empfänger)")
                 .color(RedstoneUtilities.PRIMARY_COLOR)
                 .decoration(TextDecoration.ITALIC, false);
+        if (material == null) material = Material.CALIBRATED_SCULK_SENSOR;
         ItemStack itemStack = new ItemStack(material);
         ItemMeta itemMeta = itemStack.getItemMeta();
         PDCLocationUtil.setLocation(itemMeta, location, LOCATION_KEY);
         itemMeta.lore(List.of(
-                Util.getLore("World: " + location.getWorld().getName()),
+                Util.getLore("Welt: " + location.getWorld().getName()),
                 Util.getLore("X: " + location.getBlockX()),
                 Util.getLore("Y: " + location.getBlockY()),
                 Util.getLore("Z: " + location.getBlockZ())
@@ -167,9 +167,9 @@ public class InfometerListGUI extends GUI {
             }
         }
         Location location = PDCLocationUtil.getLocation(item.getItemMeta(), LOCATION_KEY);
+        assert location != null;
         BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
         ReceiverBlockEntity receiver = blockEntityRegistry.get(location, ReceiverBlockEntity.class);
-        this.inv.close();
         InfometerGUI infometerGUI = new InfometerGUI(this.player, receiver);
         infometerGUI.setup();
         infometerGUI.register();

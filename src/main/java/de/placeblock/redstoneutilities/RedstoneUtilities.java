@@ -30,9 +30,11 @@ public class RedstoneUtilities extends JavaPlugin {
 
         this.blockEntityListener = new BlockEntityListener(this);
         this.blockEntityTypeRegistry = new BlockEntityTypeRegistry();
-        this.blockEntityRegistry = new BlockEntityRegistry();
+        this.blockEntityRegistry = new BlockEntityRegistry(this);
+
         this.wireless = new Wireless();
         this.wireless.setup(this);
+
         PluginManager pluginManager = this.getServer().getPluginManager();
         pluginManager.registerEvents(this.blockEntityListener, this);
         this.textInputHandler = new TextInputHandler();
@@ -44,8 +46,11 @@ public class RedstoneUtilities extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for (BlockEntityType<?> blockEntityType : this.blockEntityTypeRegistry.getBlockEntityTypes().values()) {
+        for (BlockEntityType<?, ?> blockEntityType : this.blockEntityTypeRegistry.getBlockEntityTypes().values()) {
             blockEntityType.disable();
+        }
+        for (BlockEntity<?, ?> blockEntity : this.blockEntityRegistry.getBlockEntities().values()) {
+            blockEntity.store();
         }
     }
 

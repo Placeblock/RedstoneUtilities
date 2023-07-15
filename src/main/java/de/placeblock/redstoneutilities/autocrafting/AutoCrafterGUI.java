@@ -1,4 +1,4 @@
 package de.placeblock.redstoneutilities.autocrafting;
 
-public class AutoCrafting {
+public class AutoCrafterGUI {
 }

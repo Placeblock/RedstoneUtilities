@@ -14,7 +14,6 @@ public abstract class GUI implements Listener {
 
     protected final Player player;
 
-
     public GUI(Player player) {
         this.player = player;
         this.inv = createInventory();

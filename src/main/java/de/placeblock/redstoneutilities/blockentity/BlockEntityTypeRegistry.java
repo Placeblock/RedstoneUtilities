@@ -1,26 +1,33 @@
 package de.placeblock.redstoneutilities.blockentity;
 
+import de.placeblock.redstoneutilities.RedstoneUtilities;
 import lombok.Getter;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class BlockEntityTypeRegistry {
-    @Getter
-    private final Map<String, BlockEntityType<?>> blockEntityTypes = new HashMap<>();
+    private static final NamespacedKey TYPE_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "RU_TYPE");
 
-    public void register(BlockEntityType<?> type) {
+    @Getter
+    private final Map<String, BlockEntityType<?, ?>> blockEntityTypes = new HashMap<>();
+
+    public void register(BlockEntityType<?, ?> type) {
         this.blockEntityTypes.put(type.getName(), type);
     }
 
-    public BlockEntityType<?> getBlockEntityType(String name) {
+    public BlockEntityType<?, ?> getBlockEntityType(String name) {
         return this.blockEntityTypes.get(name);
     }
 
-    public BlockEntityType<?> getBlockEntityType(ItemStack item) {
-        for (BlockEntityType<?> blockEntityType : this.blockEntityTypes.values()) {
+    public BlockEntityType<?, ?> getBlockEntityType(ItemStack item) {
+        for (BlockEntityType<?, ?> blockEntityType : this.blockEntityTypes.values()) {
             if (blockEntityType.getItemStack().isSimilar(item)) {
                 return blockEntityType;
             }
@@ -28,14 +35,23 @@ public class BlockEntityTypeRegistry {
         return null;
     }
 
-
-    public <T extends BlockEntity> T getBlockEntity(String name, Interaction interaction, Class<T> blockEntityClass) {
-        BlockEntity blockEntity = this.getBlockEntity(name, interaction);
-        return blockEntityClass.cast(blockEntity);
+    public BlockEntityType<?, ?> getType(Interaction interaction) {
+        PersistentDataContainer pdc = interaction.getPersistentDataContainer();
+        String typeName = pdc.get(TYPE_KEY, PersistentDataType.STRING);
+        return this.getBlockEntityType(typeName);
     }
-    public BlockEntity getBlockEntity(String name, Interaction interaction) {
-        BlockEntityType<?> blockEntityType = this.blockEntityTypes.get(name);
-        if (blockEntityType == null) return null;
-        return blockEntityType.loadBlockEntity(interaction);
+
+    public static void setType(Interaction interaction, BlockEntityType<?, ?> blockEntityType) {
+        setType(interaction, blockEntityType.getName());
+    }
+
+    public static String getType(Entity entity) {
+        PersistentDataContainer pdc = entity.getPersistentDataContainer();
+        return pdc.get(TYPE_KEY, PersistentDataType.STRING);
+    }
+
+    public static void setType(Entity entity, String name) {
+        PersistentDataContainer pdc = entity.getPersistentDataContainer();
+        pdc.set(TYPE_KEY, PersistentDataType.STRING, name);
     }
 }

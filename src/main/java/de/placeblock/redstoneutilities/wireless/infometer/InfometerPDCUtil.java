@@ -1,7 +1,7 @@
 package de.placeblock.redstoneutilities.wireless.infometer;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
-import de.placeblock.redstoneutilities.wireless.PDCLocationUtil;
+import de.placeblock.redstoneutilities.pdc.PDCLocationUtil;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;

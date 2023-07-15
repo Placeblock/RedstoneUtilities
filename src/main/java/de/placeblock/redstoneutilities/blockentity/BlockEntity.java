@@ -3,6 +3,7 @@ package de.placeblock.redstoneutilities.blockentity;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -10,22 +11,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
-public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends BlockEntityType<B>> {
+public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> {
     private static final NamespacedKey TYPE_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "block_entity_type");
 
-    protected final BlockEntityType<B> type;
+    protected final BlockEntityType<B, BT> type;
     protected final Interaction interaction;
-    protected final List<Entity> entityStructure;
-
-    public void setType() {
-        this.interaction.getPersistentDataContainer().set(TYPE_KEY, PersistentDataType.STRING, this.type.getName());
-    }
+    @Setter
+    protected List<Entity> entityStructure;
 
     public void remove(Player player) {
         this.remove(player, true);
@@ -57,8 +55,13 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         world.dropItem(centerLocation, this.type.getItemStack());
     }
 
-    public void store() {
+    public void load() {
+        this.setEntityStructure(EntityStructureUtil.getEntities(interaction));
+    }
 
+    public void store() {
+        List<UUID> entityUUIDs = this.entityStructure.stream().map(Entity::getUniqueId).toList();
+        EntityStructureUtil.setEntities(this.interaction, entityUUIDs);
     }
 
 }

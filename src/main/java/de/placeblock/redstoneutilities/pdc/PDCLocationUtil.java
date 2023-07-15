@@ -1,4 +1,4 @@
-package de.placeblock.redstoneutilities.wireless;
+package de.placeblock.redstoneutilities.pdc;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.pdc.UUIDDataType;
@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.entity.Interaction;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
@@ -99,6 +100,15 @@ public class PDCLocationUtil {
     public static void setLocation(PersistentDataHolder holder, Location location, NamespacedKey key) {
         PersistentDataContainer pdc = holder.getPersistentDataContainer();
         pdc.set(key, PersistentDataType.TAG_CONTAINER, getLocationPDC(location, pdc));
+    }
+
+    public static void setLocations(PersistentDataHolder holder, List<Location> locations, NamespacedKey key) {
+        PersistentDataContainer pdc = holder.getPersistentDataContainer();
+        PersistentDataContainer[] locationsPDC = new PersistentDataContainer[locations.size()];
+        for (int i = 0; i < locationsPDC.length; i++) {
+            locationsPDC[i] = getLocationPDC(locations.get(i), pdc);
+        }
+        setLocations(holder, locationsPDC, key);
     }
 
     private static void setLocations(PersistentDataHolder holder, PersistentDataContainer[] locationsPDC, NamespacedKey key) {

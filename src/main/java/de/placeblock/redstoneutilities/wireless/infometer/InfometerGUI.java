@@ -5,7 +5,6 @@ import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.TextInputHandler;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.gui.GUI;
-import de.placeblock.redstoneutilities.wireless.Wireless;
 import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -48,6 +47,7 @@ public class InfometerGUI extends GUI {
     private ItemStack getReceiverItem() {
         String name = this.receiver.getWirelessName();
         Material material = this.receiver.getWirelessType();
+        if (material == null) material = Material.CALIBRATED_SCULK_SENSOR;
         return Util.getItem(material, Component.text(name));
     }
 
@@ -65,7 +65,6 @@ public class InfometerGUI extends GUI {
         event.setCancelled(true);
         ItemStack item = event.getCurrentItem();
         if (item == null) return;
-        Wireless wireless = RedstoneUtilities.getInstance().getWireless();
         if (item.isSimilar(ON_ITEM)) {
             this.receiver.setPower(0);
             this.setToggleItem();

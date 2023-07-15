@@ -6,11 +6,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -26,13 +29,14 @@ public class BlockEntityListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) return;
         ItemStack item = event.getItemInHand();
         BlockEntityTypeRegistry blockEntityTypeRegistry = this.plugin.getBlockEntityTypeRegistry();
-        BlockEntityType<?> blockEntityType = blockEntityTypeRegistry.getBlockEntityType(item);
+        BlockEntityType<?, ?> blockEntityType = blockEntityTypeRegistry.getBlockEntityType(item);
         if (blockEntityType == null) return;
 
         Player player = event.getPlayer();
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), event.getBlock().getLocation(), blockEntityType);
-        blockEntityType.onPlace(player, targetLoc.getBlock());
+        Interaction interaction = blockEntityType.onPlace(player, targetLoc.getBlock());
+        BlockEntityTypeRegistry.setType(interaction, blockEntityType);
     }
 
     @EventHandler
@@ -43,7 +47,7 @@ public class BlockEntityListener implements Listener {
             event.getAction() != Action.RIGHT_CLICK_BLOCK ||
             item == null) return;
         BlockEntityTypeRegistry blockEntityTypeRegistry = this.plugin.getBlockEntityTypeRegistry();
-        BlockEntityType<?> blockEntityType = blockEntityTypeRegistry.getBlockEntityType(item);
+        BlockEntityType<?, ?> blockEntityType = blockEntityTypeRegistry.getBlockEntityType(item);
         if (blockEntityType == null) return;
 
         event.setCancelled(true);
@@ -55,8 +59,10 @@ public class BlockEntityListener implements Listener {
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), placedBlock.getLocation(), blockEntityType);
 
-        boolean accept = blockEntityType.onPlace(player, targetLoc.getBlock());
-        if (!accept) return;
+        Interaction interaction = blockEntityType.onPlace(player, targetLoc.getBlock());
+        if (interaction == null) return;
+
+        BlockEntityTypeRegistry.setType(interaction, blockEntityType);
 
         if (blockEntityType.isRemoveItem()) {
             ItemStack removeItem = blockEntityType.getItemStack().clone();
@@ -67,7 +73,26 @@ public class BlockEntityListener implements Listener {
         player.playSound(player, Sound.BLOCK_STONE_PLACE, 1.0F, 1.0F);
     }
 
-    private Location getTargetLocation(Location placedAgainstLoc, Location placedLocation, BlockEntityType<?> entry) {
+    @EventHandler
+    public void on(PlayerInteractAtEntityEvent event) {
+        Location location = event.getRightClicked().getLocation().toBlockLocation();
+        BlockEntity<?, ?> blockEntity = this.plugin.getBlockEntityRegistry().get(location);
+        if (blockEntity == null) return;
+        blockEntity.onInteract(event);
+    }
+
+    @EventHandler
+    public void on(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player player)
+            || !(event.getEntity() instanceof Interaction interaction)) return;
+        Location location = interaction.getLocation();
+        BlockEntityRegistry blockEntityRegistry = this.plugin.getBlockEntityRegistry();
+        BlockEntity<?, ?> blockEntity = blockEntityRegistry.get(location);
+        blockEntityRegistry.remove(location);
+        blockEntity.remove(player);
+    }
+
+    private Location getTargetLocation(Location placedAgainstLoc, Location placedLocation, BlockEntityType<?, ?> entry) {
         Block clickedBlock = placedAgainstLoc.getBlock();
         boolean replace = false;
         for (Material material : entry.getReplaceTypes()) {
