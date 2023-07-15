@@ -2,6 +2,7 @@ package de.placeblock.redstoneutilities.blockentity;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import lombok.Getter;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Interaction;
@@ -29,9 +30,13 @@ public abstract class BlockEntityType<B extends BlockEntity<B, BT>, BT extends B
         this.plugin.getLogger().info("Registered BlockEntityType " + name);
     }
 
+    public B getBlockEntity() {
+        return this.getBlockEntity(null);
+    }
+
     public abstract B getBlockEntity(Interaction interaction);
 
-    public abstract Interaction onPlace(Player player, Block block);
+    public abstract boolean canBePlaced(Player player, Location location);
 
     public abstract void disable();
 }

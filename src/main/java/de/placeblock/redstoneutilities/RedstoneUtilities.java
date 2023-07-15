@@ -1,4 +1,6 @@
 package de.placeblock.redstoneutilities;
+import de.placeblock.redstoneutilities.autocrafting.AutoCrafterBlockEntityType;
+import de.placeblock.redstoneutilities.autocrafting.AutoCrafting;
 import de.placeblock.redstoneutilities.blockentity.*;
 import de.placeblock.redstoneutilities.wireless.Wireless;
 import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntityType;
@@ -23,6 +25,7 @@ public class RedstoneUtilities extends JavaPlugin {
     private BlockEntityRegistry blockEntityRegistry;
     private TextInputHandler textInputHandler;
     private Wireless wireless;
+    private AutoCrafting autoCrafting;
 
     @Override
     public void onEnable() {
@@ -34,14 +37,17 @@ public class RedstoneUtilities extends JavaPlugin {
 
         this.wireless = new Wireless();
         this.wireless.setup(this);
+        this.autoCrafting = new AutoCrafting();
+        this.autoCrafting.setup(this);
 
         PluginManager pluginManager = this.getServer().getPluginManager();
         pluginManager.registerEvents(this.blockEntityListener, this);
         this.textInputHandler = new TextInputHandler();
         pluginManager.registerEvents(this.textInputHandler, this);
 
-        this.blockEntityTypeRegistry.register(new ReceiverBlockEntityType(this, "WIRELESS_RECEIVER"));
-        this.blockEntityTypeRegistry.register(new SenderBlockEntityType(this, "WIRELESS_SENDER"));
+        this.blockEntityTypeRegistry.register(new ReceiverBlockEntityType(this));
+        this.blockEntityTypeRegistry.register(new SenderBlockEntityType(this));
+        this.blockEntityTypeRegistry.register(new AutoCrafterBlockEntityType(this));
     }
 
     @Override

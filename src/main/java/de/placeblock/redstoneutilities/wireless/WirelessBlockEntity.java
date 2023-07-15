@@ -99,6 +99,17 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     protected abstract void handleConnectorInteraction(Player player);
 
     @Override
+    public void summon(Location location) {
+        World world = location.getWorld();
+        Location interactionLocation = location.clone().add(0.5, 0, 0.5);
+
+        this.interaction = world.spawn(interactionLocation, Interaction.class, i -> {
+            i.setInteractionWidth(0.6F);
+            i.setInteractionHeight(0.4F);
+        });
+    }
+
+    @Override
     public void load() {
         super.load();
         Interaction interaction = this.getInteraction();

@@ -35,8 +35,9 @@ public class BlockEntityListener implements Listener {
         Player player = event.getPlayer();
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), event.getBlock().getLocation(), blockEntityType);
-        Interaction interaction = blockEntityType.onPlace(player, targetLoc.getBlock());
-        BlockEntityTypeRegistry.setType(interaction, blockEntityType);
+
+        if (!blockEntityType.canBePlaced(player, targetLoc)) return;
+        this.createBlockEntity(blockEntityType, targetLoc);
     }
 
     @EventHandler
@@ -59,10 +60,8 @@ public class BlockEntityListener implements Listener {
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), placedBlock.getLocation(), blockEntityType);
 
-        Interaction interaction = blockEntityType.onPlace(player, targetLoc.getBlock());
-        if (interaction == null) return;
-
-        BlockEntityTypeRegistry.setType(interaction, blockEntityType);
+        if (!blockEntityType.canBePlaced(player, targetLoc)) return;
+        this.createBlockEntity(blockEntityType, targetLoc);
 
         if (blockEntityType.isRemoveItem()) {
             ItemStack removeItem = blockEntityType.getItemStack().clone();
@@ -71,6 +70,14 @@ public class BlockEntityListener implements Listener {
         }
 
         player.playSound(player, Sound.BLOCK_STONE_PLACE, 1.0F, 1.0F);
+    }
+
+    private void createBlockEntity(BlockEntityType<?, ?> blockEntityType, Location targetLoc) {
+        BlockEntity<?, ?> blockEntity = blockEntityType.getBlockEntity();
+        blockEntity.summon(targetLoc);
+        Interaction interaction = blockEntity.getInteraction();
+        BlockEntityTypeRegistry.setType(interaction, blockEntityType);
+        blockEntity.store();
     }
 
     @EventHandler

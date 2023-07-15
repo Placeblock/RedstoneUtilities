@@ -19,22 +19,4 @@ public abstract class WirelessBlockEntityType<B extends WirelessBlockEntity<B, B
     public WirelessBlockEntityType(RedstoneUtilities plugin, String name, ItemStack itemStack) {
         super(plugin, name, itemStack, true, List.of(Material.REDSTONE_WIRE));
     }
-
-    protected Interaction spawnEntities(Location location, Material material) {
-        World world = location.getWorld();
-
-        Location displayLocation = location.clone().add(0.25, 0, 0.25);
-        Location interactionLocation = location.clone().add(0.5, 0, 0.5);
-
-        Interaction interaction = world.spawn(interactionLocation, Interaction.class, i -> {
-            i.setInteractionWidth(0.6F);
-            i.setInteractionHeight(0.4F);
-        });
-        world.spawn(displayLocation, BlockDisplay.class, bd -> {
-            bd.setBlock(material.createBlockData());
-            bd.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(0.5F, 0.5F, 0.5F), new AxisAngle4f()));
-            EntityStructureUtil.addEntity(interaction, bd.getUniqueId());
-        });
-        return interaction;
-    }
 }

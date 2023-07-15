@@ -12,6 +12,7 @@ import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,9 +22,14 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
     private static final NamespacedKey TYPE_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "block_entity_type");
 
     protected final BlockEntityType<B, BT> type;
-    protected final Interaction interaction;
+    protected Interaction interaction;
     @Setter
-    protected List<Entity> entityStructure;
+    protected List<Entity> entityStructure = new ArrayList<>();
+
+    public BlockEntity(BlockEntityType<B, BT> type, Interaction interaction) {
+        this.type = type;
+        this.interaction = interaction;
+    }
 
     public void remove(Player player) {
         this.remove(player, true);
@@ -55,12 +61,15 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         world.dropItem(centerLocation, this.type.getItemStack());
     }
 
+    public abstract void summon(Location location);
+
     public void load() {
         this.setEntityStructure(EntityStructureUtil.getEntities(interaction));
     }
 
     public void store() {
         List<UUID> entityUUIDs = this.entityStructure.stream().map(Entity::getUniqueId).toList();
+        System.out.println(entityUUIDs);
         EntityStructureUtil.setEntities(this.interaction, entityUUIDs);
     }
 

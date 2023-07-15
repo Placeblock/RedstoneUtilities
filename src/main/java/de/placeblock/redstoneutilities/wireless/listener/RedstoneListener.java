@@ -27,8 +27,7 @@ public class RedstoneListener implements Listener {
                 receiver.summonParticles();
                 receiver.setPower(event.getNewCurrent());
             }
-        } else if (blockEntity instanceof ReceiverBlockEntity
-                && event.getNewCurrent() <= event.getOldCurrent()) {
+        } else if (blockEntity instanceof ReceiverBlockEntity) {
             event.setNewCurrent(event.getOldCurrent());
         }
     }

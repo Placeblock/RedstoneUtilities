@@ -4,6 +4,7 @@ import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityRegistry;
+import de.placeblock.redstoneutilities.blockentity.EntityStructureUtil;
 import de.placeblock.redstoneutilities.wireless.*;
 import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
 import lombok.Getter;
@@ -12,10 +13,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Interaction;
-import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +28,7 @@ import java.util.List;
 @Setter
 public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, SenderBlockEntityType> {
     private List<ReceiverBlockEntity> receivers;
-    public SenderBlockEntity(SenderBlockEntityType type,
-                             Interaction interaction) {
+    public SenderBlockEntity(SenderBlockEntityType type, Interaction interaction) {
         super(type, interaction);
     }
 
@@ -46,14 +49,27 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
     }
 
     @Override
+    public void summon(Location location) {
+        super.summon(location);
+        World world = location.getWorld();
+
+        Location displayLocation = location.clone().add(0.25, 0, 0.25);
+
+        world.spawn(displayLocation, BlockDisplay.class, bd -> {
+            bd.setBlock(Material.SCULK_SHRIEKER.createBlockData());
+            bd.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(0.5F, 0.5F, 0.5F), new AxisAngle4f()));
+            EntityStructureUtil.addEntity(this.interaction, bd.getUniqueId());
+        });
+    }
+
+    @Override
     public void remove(Player player, boolean drop) {
         super.remove(player, drop);
         for (ReceiverBlockEntity receiver : this.receivers) {
             receiver.getSenders().remove(this);
-            System.out.println("REMOVED SENDER FROM RECEIVER");
             Wireless wireless = RedstoneUtilities.getInstance().getWireless();
             ConnectorHandler connectorHandler = wireless.getConnectorHandler();
-            connectorHandler.giveCost(player, interaction.getLocation(), receiver.getBlockLocation());
+            connectorHandler.giveCost(player, this.interaction.getLocation(), receiver.getBlockLocation());
         }
     }
 
@@ -76,7 +92,7 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
     public void load() {
         super.load();
         BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
-        List<Location> receiverLocs = WirelessPDCUtil.getReceivers(interaction);
+        List<Location> receiverLocs = WirelessPDCUtil.getReceivers(this.interaction);
         List<ReceiverBlockEntity> receivers = new ArrayList<>();
         for (Location receiverLoc : receiverLocs) {
             ReceiverBlockEntity receiverBlockEntity = blockEntityRegistry.get(receiverLoc, ReceiverBlockEntity.class);
