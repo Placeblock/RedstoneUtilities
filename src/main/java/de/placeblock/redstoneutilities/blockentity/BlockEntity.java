@@ -31,6 +31,10 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         this.interaction = interaction;
     }
 
+    public UUID getUUID() {
+        return this.interaction.getUniqueId();
+    }
+
     public void remove(Player player) {
         this.remove(player, true);
     }
@@ -69,7 +73,6 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
 
     public void store() {
         List<UUID> entityUUIDs = this.entityStructure.stream().map(Entity::getUniqueId).toList();
-        System.out.println(entityUUIDs);
         EntityStructureUtil.setEntities(this.interaction, entityUUIDs);
     }
 

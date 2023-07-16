@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -82,8 +83,9 @@ public class BlockEntityListener implements Listener {
 
     @EventHandler
     public void on(PlayerInteractAtEntityEvent event) {
-        Location location = event.getRightClicked().getLocation().toBlockLocation();
-        BlockEntity<?, ?> blockEntity = this.plugin.getBlockEntityRegistry().get(location);
+        Entity entity = event.getRightClicked();
+        if (!(entity instanceof Interaction interaction)) return;
+        BlockEntity<?, ?> blockEntity = this.plugin.getBlockEntityRegistry().get(interaction);
         if (blockEntity == null) return;
         blockEntity.onInteract(event);
     }
@@ -92,10 +94,9 @@ public class BlockEntityListener implements Listener {
     public void on(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player player)
             || !(event.getEntity() instanceof Interaction interaction)) return;
-        Location location = interaction.getLocation();
         BlockEntityRegistry blockEntityRegistry = this.plugin.getBlockEntityRegistry();
-        BlockEntity<?, ?> blockEntity = blockEntityRegistry.get(location);
-        blockEntityRegistry.remove(location);
+        BlockEntity<?, ?> blockEntity = blockEntityRegistry.get(interaction);
+        blockEntityRegistry.remove(interaction);
         blockEntity.remove(player);
     }
 

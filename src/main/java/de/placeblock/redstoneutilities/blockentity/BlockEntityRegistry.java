@@ -1,10 +1,8 @@
 package de.placeblock.redstoneutilities.blockentity;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
-import de.placeblock.redstoneutilities.Util;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Location;
 import org.bukkit.entity.Interaction;
 
 import java.util.HashMap;
@@ -15,47 +13,41 @@ public class BlockEntityRegistry {
 
     private final RedstoneUtilities plugin;
     @Getter
-    private final Map<Location, BlockEntity<?, ?>> blockEntities = new HashMap<>();
+    private final Map<Interaction, BlockEntity<?, ?>> blockEntities = new HashMap<>();
 
     public void register(BlockEntity<?, ?> blockEntity) {
-        this.blockEntities.put(blockEntity.getBlockLocation(), blockEntity);
+        this.blockEntities.put(blockEntity.getInteraction(), blockEntity);
     }
 
-    public boolean has(Location location) {
-        return this.blockEntities.containsKey(location);
+    public boolean has(Interaction interaction) {
+        return this.blockEntities.containsKey(interaction);
     }
 
-    public <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> B get(Location location, Class<B> bclazz) {
-        return bclazz.cast(this.get(location.toBlockLocation()));
+    public <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> B get(Interaction interaction, Class<B> bclazz) {
+        return bclazz.cast(this.get(interaction));
     }
 
-    public BlockEntity<?, ?> get(Location location) {
-        location = location.toBlockLocation();
-        if (!this.has(location)) {
-            this.load(location);
+    public BlockEntity<?, ?> get(Interaction interaction) {
+        if (!this.has(interaction)) {
+            this.load(interaction);
         }
-        return this.blockEntities.get(location);
+        return this.blockEntities.get(interaction);
     }
 
-    public void load(Location location) {
-        this.plugin.getLogger().info("Loading unknown BlockEntity at Location: " + location);
-        Interaction interaction = Util.getInteraction(location);
-        if (interaction == null) {
-            this.plugin.getLogger().warning("Interaction is not existing");
-            return;
-        }
+    public void load(Interaction interaction) {
+        this.plugin.getLogger().info("Loading unknown BlockEntity at Location: " + interaction.getLocation());
         BlockEntityType<?, ?> type = this.plugin.getBlockEntityTypeRegistry().getType(interaction);
         if (type == null) {
             this.plugin.getLogger().warning("BlockEntityType is null");
             return;
         }
         BlockEntity<?, ?> blockEntity = type.getBlockEntity(interaction);
-        this.blockEntities.put(location, blockEntity);
+        this.blockEntities.put(interaction, blockEntity);
         blockEntity.load();
     }
 
-    public void remove(Location location) {
-        this.blockEntities.remove(location.toBlockLocation());
+    public void remove(Interaction interaction) {
+        this.blockEntities.remove(interaction);
     }
 
 }

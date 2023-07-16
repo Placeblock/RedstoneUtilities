@@ -21,7 +21,7 @@ import java.util.UUID;
 public class Util {
 
     public static Interaction getInteraction(Location location) {
-        return getNearbyEntity(location.toCenterLocation(), Interaction.class);
+        return getNearbyEntity(location, Interaction.class);
     }
 
     private static <T extends Entity> T getNearbyEntity(Location location, Class<T> entity) {

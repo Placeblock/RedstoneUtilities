@@ -1,12 +1,14 @@
 package de.placeblock.redstoneutilities.wireless.listener;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
 import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
 import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntity;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Interaction;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
@@ -20,7 +22,9 @@ public class RedstoneListener implements Listener {
         Block block = event.getBlock();
         if (block.getType() != Material.REDSTONE_WIRE) return;
         Location location = block.getLocation().add(0.5, 0.5, 0.5);
-        BlockEntity<?, ?> blockEntity = this.plugin.getBlockEntityRegistry().get(location);
+        Interaction interaction = Util.getInteraction(location);
+        if (interaction == null) return;
+        BlockEntity<?, ?> blockEntity = this.plugin.getBlockEntityRegistry().get(interaction);
         if (blockEntity instanceof SenderBlockEntity senderBlockEntity) {
             senderBlockEntity.summonParticles();
             for (ReceiverBlockEntity receiver : senderBlockEntity.getReceivers()) {

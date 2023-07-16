@@ -2,6 +2,7 @@ package de.placeblock.redstoneutilities.wireless;
 
 import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -45,7 +46,7 @@ public class ConnectorHandler implements Listener {
     }
 
     public int getCost(Player player) {
-        Location location = this.players.get(player).getLocation();
+        Location location = this.players.get(player).getSenderBlockEntity().getCenterLocation();
         Entity targetEntity = player.getTargetEntity(100, false);
         Location targetLoc;
         if (targetEntity == null) {
@@ -100,7 +101,7 @@ public class ConnectorHandler implements Listener {
         }
     }
 
-    public void addPlayer(Player player, Location sender, boolean destorying) {
+    public void addPlayer(Player player, SenderBlockEntity sender, boolean destorying) {
         this.players.put(player, new ConnectorInfo(sender, destorying));
     }
 
@@ -120,7 +121,7 @@ public class ConnectorHandler implements Listener {
     @Getter
     @RequiredArgsConstructor
     public static class ConnectorInfo {
-        private final Location location;
+        private final SenderBlockEntity senderBlockEntity;
         private final boolean destroying;
     }
 }
