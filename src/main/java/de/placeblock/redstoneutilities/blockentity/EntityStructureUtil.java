@@ -53,18 +53,6 @@ public class EntityStructureUtil {
         return uuids;
     }
 
-    public static List<Entity> getEntities(Interaction blockEntity) {
-        List<UUID> entityUUIDs = getEntityUUIDs(blockEntity);
-        if (entityUUIDs == null) return null;
-        List<Entity> entities = new ArrayList<>();
-        for (UUID entityUUID : entityUUIDs) {
-            Entity entity = Bukkit.getEntity(entityUUID);
-            if (entity == null) continue;
-            entities.add(entity);
-        }
-        return entities;
-    }
-
     public static List<Entity> getEntities(Interaction blockEntity, String type) {
         List<UUID> entityUUIDs = getEntityUUIDs(blockEntity);
         if (entityUUIDs == null) return null;

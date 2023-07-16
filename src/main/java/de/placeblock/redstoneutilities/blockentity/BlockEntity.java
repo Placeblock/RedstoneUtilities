@@ -1,11 +1,10 @@
 package de.placeblock.redstoneutilities.blockentity;
 
-import de.placeblock.redstoneutilities.RedstoneUtilities;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
@@ -19,12 +18,11 @@ import java.util.UUID;
 @Getter
 @RequiredArgsConstructor
 public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> {
-    private static final NamespacedKey TYPE_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "block_entity_type");
 
     protected final BlockEntityType<B, BT> type;
     protected Interaction interaction;
     @Setter
-    protected List<Entity> entityStructure = new ArrayList<>();
+    protected List<UUID> entityStructure = new ArrayList<>();
 
     public BlockEntity(BlockEntityType<B, BT> type, Interaction interaction) {
         this.type = type;
@@ -39,8 +37,20 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         this.remove(player, true);
     }
 
+    public List<Entity> getStructureEntities() {
+        List<Entity> entities = new ArrayList<>();
+        for (UUID uuid : this.entityStructure) {
+            Entity entity = Bukkit.getEntity(uuid);
+            if (entity != null) {
+                entities.add(entity);
+            }
+        }
+        return entities;
+    }
+
     public void remove(Player player, boolean drop) {
-        for (Entity entity : this.entityStructure) {
+        this.disable();
+        for (Entity entity : this.getStructureEntities()) {
             entity.remove();
         }
         this.interaction.remove();
@@ -68,12 +78,13 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
     public abstract void summon(Location location);
 
     public void load() {
-        this.setEntityStructure(EntityStructureUtil.getEntities(interaction));
+        this.setEntityStructure(EntityStructureUtil.getEntityUUIDs(this.interaction));
     }
 
     public void store() {
-        List<UUID> entityUUIDs = this.entityStructure.stream().map(Entity::getUniqueId).toList();
-        EntityStructureUtil.setEntities(this.interaction, entityUUIDs);
+        EntityStructureUtil.setEntities(this.interaction, this.entityStructure);
     }
+
+    public abstract void disable();
 
 }

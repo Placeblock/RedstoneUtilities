@@ -4,7 +4,6 @@ import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
-import de.placeblock.redstoneutilities.blockentity.EntityStructureUtil;
 import de.placeblock.redstoneutilities.wireless.*;
 import de.placeblock.redstoneutilities.wireless.infometer.InfometerPDCUtil;
 import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntity;
@@ -112,7 +111,7 @@ public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity
         world.spawn(displayLocation, BlockDisplay.class, bd -> {
             bd.setBlock(Material.CALIBRATED_SCULK_SENSOR.createBlockData());
             bd.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(0.5F, 0.5F, 0.5F), new AxisAngle4f()));
-            this.entityStructure.add(bd);
+            this.entityStructure.add(bd.getUniqueId());
         });
     }
 

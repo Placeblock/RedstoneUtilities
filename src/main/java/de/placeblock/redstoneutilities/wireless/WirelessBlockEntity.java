@@ -58,7 +58,7 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
                 id.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f((float) (finalI * (Math.PI / 2) + Math.PI/2), 0F, 1F, 0F), new Vector3f(0.2F, 0.2F, 0.2F), new AxisAngle4f()));
                 BlockEntityTypeRegistry.setType(id, WIRELESS_TYPE_NAME);
                 this.typeEntities.add(id);
-                this.entityStructure.add(id);
+                this.entityStructure.add(id.getUniqueId());
             });
         }
     }
@@ -123,5 +123,10 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     public void store() {
         super.store();
         WirelessPDCUtil.setType(this.interaction, this.wirelessType);
+    }
+
+    @Override
+    public void disable() {
+        
     }
 }

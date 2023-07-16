@@ -80,7 +80,7 @@ public class Items {
         ItemMeta autocrafterMeta = autocrafterItem.getItemMeta();
         autocrafterMeta.addEnchant(Enchantment.PROTECTION_FALL, 1, false);
         autocrafterMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
-        autocrafterMeta.displayName(Component.text("Autocrafter")
+        autocrafterMeta.displayName(Component.text("AutoCrafter")
                 .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
                 .color(RedstoneUtilities.PRIMARY_COLOR));
         autocrafterItem.setItemMeta(autocrafterMeta);
@@ -88,7 +88,7 @@ public class Items {
                 Component.text("Kann nur auf")
                         .color(RedstoneUtilities.INFERIOR_COLOR)
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE),
-                Component.text("Shift + Rechtsklick -> Trennen")
+                Component.text("Spendern plaziert werden")
                         .color(RedstoneUtilities.INFERIOR_COLOR)
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
         ));

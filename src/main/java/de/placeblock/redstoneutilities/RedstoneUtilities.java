@@ -56,6 +56,7 @@ public class RedstoneUtilities extends JavaPlugin {
             blockEntityType.disable();
         }
         for (BlockEntity<?, ?> blockEntity : this.blockEntityRegistry.getBlockEntities().values()) {
+            blockEntity.disable();
             blockEntity.store();
         }
     }
