@@ -18,29 +18,6 @@ public class EntityStructureUtil {
     private static final NamespacedKey ENTITIES_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "entities");
     private static final NamespacedKey UUID_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "uuid");
 
-    public static void addEntity(Interaction blockEntity, Entity entity) {
-        addEntity(blockEntity, entity.getUniqueId());
-    }
-
-    public static void addEntity(Interaction blockEntity, UUID uuid) {
-        List<UUID> uuids = getEntityUUIDs(blockEntity);
-        if (uuids == null) uuids = new ArrayList<>();
-        uuids.add(uuid);
-        setEntities(blockEntity, uuids);
-    }
-
-    public static boolean removeEntity(Interaction blockEntity, Entity entity) {
-        return removeEntity(blockEntity, entity.getUniqueId());
-    }
-
-    public static boolean removeEntity(Interaction blockEntity, UUID uuid) {
-        List<UUID> uuids = getEntityUUIDs(blockEntity);
-        if (uuids == null) return false;
-        uuids.remove(uuid);
-        setEntities(blockEntity, uuids);
-        return true;
-    }
-
     public static List<UUID> getEntityUUIDs(Interaction blockEntity) {
         PersistentDataContainer pdc = blockEntity.getPersistentDataContainer();
         if (!pdc.has(ENTITIES_KEY)) return null;
@@ -65,6 +42,16 @@ public class EntityStructureUtil {
             }
         }
         return typeEntities;
+    }
+
+    public static List<UUID> getEntityUUIDs(Interaction blockEntity, String type) {
+        List<Entity> entities = getEntities(blockEntity, type);
+        if (entities == null) return null;
+        List<UUID> uuids = new ArrayList<>();
+        for (Entity entity : entities) {
+            uuids.add(entity.getUniqueId());
+        }
+        return uuids;
     }
 
     public static void setEntities(Interaction blockEntity, List<UUID> uuids) {

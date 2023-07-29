@@ -12,19 +12,15 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.data.type.RedstoneWire;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
-import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
-import org.joml.AxisAngle4f;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -34,10 +30,10 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     public static final String WIRELESS_TYPE_NAME = "WIRELESS_TYPE";
 
     private Material wirelessType;
-    private List<ItemDisplay> typeEntities = new ArrayList<>();
+    private List<UUID> typeEntities = new ArrayList<>();
 
-    public WirelessBlockEntity(BlockEntityType<B, BT> type, Interaction interaction) {
-        super(type, interaction);
+    public WirelessBlockEntity(BlockEntityType<B, BT> type, UUID uuid) {
+        super(type, uuid);
     }
 
     public void setWirelessType(Material type) {
@@ -47,31 +43,21 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     }
 
     private void spawnTypeEntities(Material type) {
-        Location centerLocation = this.interaction.getLocation().toCenterLocation().add(0, -0.4, 0);
-        World world = centerLocation.getWorld();
-        for (int i = 0; i < 4; i+=1) {
-            Vector rotationVec = TYPE_ENTITY_VEC.clone().rotateAroundY(i * (Math.PI / 2));
-            Location location = centerLocation.clone().add(rotationVec);
-            float finalI = i;
-            world.spawn(location, ItemDisplay.class, id -> {
-                id.setItemStack(new ItemStack(type));
-                id.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f((float) (finalI * (Math.PI / 2) + Math.PI/2), 0F, 1F, 0F), new Vector3f(0.2F, 0.2F, 0.2F), new AxisAngle4f()));
-                BlockEntityTypeRegistry.setType(id, WIRELESS_TYPE_NAME);
-                this.typeEntities.add(id);
-                this.entityStructure.add(id.getUniqueId());
-            });
-        }
+        Location centerLocation = this.getCenterLocation().add(0, -0.4, 0);
+        Util.summonCircleItemDisplays(centerLocation, 4, TYPE_ENTITY_VEC, new ItemStack(type), 0.2F, (id, rot) -> {
+            BlockEntityTypeRegistry.setType(id, WIRELESS_TYPE_NAME);
+            this.typeEntities.add(id.getUniqueId());
+            this.entityStructure.add(id.getUniqueId());
+        });
     }
 
     private void removeTypeEntities() {
-        for (Entity entity : this.typeEntities) {
-            entity.remove();
-        }
+        Util.removeEntities(this.typeEntities);
         this.typeEntities.clear();
     }
 
     public int getPower() {
-        RedstoneWire wire = Util.getRedstone(this.interaction);
+        RedstoneWire wire = Util.getRedstone(this.getInteraction());
         if (wire == null) return -1;
         return wire.getPower();
     }
@@ -98,31 +84,25 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
         World world = location.getWorld();
         Location interactionLocation = location.clone().add(0.5, 0, 0.5);
 
-        this.interaction = world.spawn(interactionLocation, Interaction.class, i -> {
+        this.uuid = world.spawn(interactionLocation, Interaction.class, i -> {
             i.setInteractionWidth(0.6F);
             i.setInteractionHeight(0.4F);
-        });
+        }).getUniqueId();
     }
 
     @Override
     public void load() {
         super.load();
         Interaction interaction = this.getInteraction();
-        List<Entity> entities = EntityStructureUtil.getEntities(interaction, WirelessBlockEntity.WIRELESS_TYPE_NAME);
-        if (entities != null) {
-            List<ItemDisplay> itemDisplays = new ArrayList<>();
-            for (Entity entity : entities) {
-                itemDisplays.add((ItemDisplay) entity);
-            }
-            this.setTypeEntities(itemDisplays);
-        }
+        List<UUID> entities = EntityStructureUtil.getEntityUUIDs(interaction, WirelessBlockEntity.WIRELESS_TYPE_NAME);
+        this.setTypeEntities(entities);
         this.setWirelessType(WirelessPDCUtil.getType(interaction));
     }
 
     @Override
     public void store() {
         super.store();
-        WirelessPDCUtil.setType(this.interaction, this.wirelessType);
+        WirelessPDCUtil.setType(this.getInteraction(), this.wirelessType);
     }
 
     @Override

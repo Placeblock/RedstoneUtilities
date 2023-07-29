@@ -5,33 +5,48 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Interaction;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class BlockEntityRegistry {
 
     private final RedstoneUtilities plugin;
     @Getter
-    private final Map<Interaction, BlockEntity<?, ?>> blockEntities = new HashMap<>();
+    private final Map<UUID, BlockEntity<?, ?>> blockEntities = new HashMap<>();
 
     public void register(BlockEntity<?, ?> blockEntity) {
-        this.blockEntities.put(blockEntity.getInteraction(), blockEntity);
+        this.blockEntities.put(blockEntity.getUuid(), blockEntity);
     }
 
     public boolean has(Interaction interaction) {
-        return this.blockEntities.containsKey(interaction);
+        return this.blockEntities.containsKey(interaction.getUniqueId());
     }
 
     public <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> B get(Interaction interaction, Class<B> bclazz) {
-        return bclazz.cast(this.get(interaction));
+        BlockEntity<?, ?> blockEntity = this.get(interaction);
+        if (blockEntity == null) return null;
+        if (bclazz.isAssignableFrom(blockEntity.getClass())) {
+            return bclazz.cast(blockEntity);
+        } else {
+            return null;
+        }
+    }
+
+    public <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> List<B> get(Class<B> bclazz) {
+        List<B> blockEntities = new ArrayList<>();
+        for (BlockEntity<?, ?> blockEntity : this.blockEntities.values()) {
+            if (bclazz.isAssignableFrom(blockEntity.getClass())) {
+                blockEntities.add((B) blockEntity);
+            }
+        }
+        return blockEntities;
     }
 
     public BlockEntity<?, ?> get(Interaction interaction) {
         if (!this.has(interaction)) {
             this.load(interaction);
         }
-        return this.blockEntities.get(interaction);
+        return this.blockEntities.get(interaction.getUniqueId());
     }
 
     public void load(Interaction interaction) {
@@ -41,13 +56,13 @@ public class BlockEntityRegistry {
             this.plugin.getLogger().warning("BlockEntityType is null");
             return;
         }
-        BlockEntity<?, ?> blockEntity = type.getBlockEntity(interaction);
-        this.blockEntities.put(interaction, blockEntity);
+        BlockEntity<?, ?> blockEntity = type.getBlockEntity(interaction.getUniqueId());
+        this.blockEntities.put(interaction.getUniqueId(), blockEntity);
         blockEntity.load();
     }
 
     public void remove(Interaction interaction) {
-        this.blockEntities.remove(interaction);
+        this.blockEntities.remove(interaction.getUniqueId());
     }
 
 }

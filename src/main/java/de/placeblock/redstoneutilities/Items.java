@@ -18,16 +18,21 @@ public class Items {
     public static final Material SENDER_MATERIAL = Material.SCULK_SHRIEKER;
     public static final Material INFOMETER_MATERIAL = Material.RECOVERY_COMPASS;
     public static final Material AUTOCRAFTER_MATERIAL = Material.CRAFTING_TABLE;
+    public static final Material CHUNKLOADER_MATERIAL = Material.RESPAWN_ANCHOR;
 
     public static final ItemStack RECEIVER_ITEM;
     public static final ItemStack SENDER_ITEM;
     public static final ItemStack CONNECTOR_ITEM;
     public static final ItemStack INFOMETER_ITEM;
     public static final ItemStack AUTOCRAFTER_ITEM;
+    public static final ItemStack FILTER_ITEM;
+    public static final ItemStack CHUNKLOADER_ITEM;
 
     public static final @NotNull TextComponent REDSTONE_INFOMETER_DISPLAYNAME = Component.text("Redstone Infometer")
             .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
             .color(RedstoneUtilities.PRIMARY_COLOR);
+
+    private static final Material FILTER_MATERIAL = Material.HOPPER;
 
     static {
         ItemStack receiverItem = new ItemStack(RECEIVER_MATERIAL);
@@ -93,6 +98,26 @@ public class Items {
                         .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
         ));
         AUTOCRAFTER_ITEM = autocrafterItem;
+
+        ItemStack filterItem = new ItemStack(FILTER_MATERIAL);
+        ItemMeta filterMeta = filterItem.getItemMeta();
+        filterMeta.addEnchant(Enchantment.PROTECTION_FALL, 1, false);
+        filterMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+        filterMeta.displayName(Component.text("Filter")
+                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                .color(RedstoneUtilities.PRIMARY_COLOR));
+        filterItem.setItemMeta(filterMeta);
+        FILTER_ITEM = filterItem;
+
+        ItemStack chunkloaderItem = new ItemStack(CHUNKLOADER_MATERIAL);
+        ItemMeta chunkloaderMeta = chunkloaderItem.getItemMeta();
+        chunkloaderMeta.addEnchant(Enchantment.PROTECTION_FALL, 1, false);
+        chunkloaderMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+        chunkloaderMeta.displayName(Component.text("ChunkLoader")
+                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                .color(RedstoneUtilities.PRIMARY_COLOR));
+        chunkloaderItem.setItemMeta(chunkloaderMeta);
+        CHUNKLOADER_ITEM = chunkloaderItem;
     }
 
     public static boolean isInfometer(ItemStack item) {

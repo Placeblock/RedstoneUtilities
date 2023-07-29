@@ -5,14 +5,13 @@ import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class AutoCrafterBlockEntityType extends BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> {
     public AutoCrafterBlockEntityType(RedstoneUtilities plugin) {
@@ -20,8 +19,8 @@ public class AutoCrafterBlockEntityType extends BlockEntityType<AutoCrafterBlock
     }
 
     @Override
-    public AutoCrafterBlockEntity getBlockEntity(Interaction interaction) {
-        return new AutoCrafterBlockEntity(this, interaction);
+    public AutoCrafterBlockEntity getBlockEntity(UUID uuid) {
+        return new AutoCrafterBlockEntity(this, uuid);
     }
 
     @Override

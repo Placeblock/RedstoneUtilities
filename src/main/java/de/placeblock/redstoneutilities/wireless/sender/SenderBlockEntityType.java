@@ -4,8 +4,9 @@ import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.wireless.WirelessBlockEntityType;
 import org.bukkit.Location;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class SenderBlockEntityType extends WirelessBlockEntityType<SenderBlockEntity, SenderBlockEntityType> {
 
@@ -15,8 +16,8 @@ public class SenderBlockEntityType extends WirelessBlockEntityType<SenderBlockEn
 
 
     @Override
-    public SenderBlockEntity getBlockEntity(Interaction interaction) {
-        return new SenderBlockEntity(this, interaction);
+    public SenderBlockEntity getBlockEntity(UUID uuid) {
+        return new SenderBlockEntity(this, uuid);
     }
 
     @Override
@@ -26,5 +27,6 @@ public class SenderBlockEntityType extends WirelessBlockEntityType<SenderBlockEn
 
     @Override
     public void disable() {
+
     }
 }

@@ -8,7 +8,6 @@ import java.util.List;
 
 public class RecipeUtil {
 
-
     public static int findBestSlot(Inventory inventory, Recipe recipe, ItemStack item) {
         if (recipe instanceof ShapedRecipe shapedRecipe) {
             List<Integer> possibleSlots = getPossibleSlotsShaped(inventory, shapedRecipe, item);
@@ -46,10 +45,16 @@ public class RecipeUtil {
     private static List<RecipeChoice> getMissingChoicesShapeless(Inventory inventory, ShapelessRecipe recipe) {
         List<ItemStack> items = new ArrayList<>(Arrays.asList(inventory.getContents()));
         List<RecipeChoice> missingChoices = new ArrayList<>();
-        outer:
         for (RecipeChoice choice : recipe.getChoiceList()) {
+            ItemStack chosenItem = null;
             for (ItemStack item : items) {
-                if (item != null && choice.test(item)) continue outer;
+                if (item != null && choice.test(item)) {
+                    chosenItem = item;
+                }
+            }
+            if (chosenItem != null) {
+                items.remove(chosenItem);
+                continue;
             }
             missingChoices.add(choice);
         }

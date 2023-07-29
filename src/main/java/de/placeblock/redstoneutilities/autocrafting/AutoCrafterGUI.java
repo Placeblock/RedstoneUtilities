@@ -3,6 +3,7 @@ package de.placeblock.redstoneutilities.autocrafting;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.gui.GUI;
+import de.placeblock.redstoneutilities.upgrades.UpgradeGUI;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,16 +34,22 @@ public class AutoCrafterGUI extends GUI {
     @Override
     protected void onClick(InventoryClickEvent event) {
         event.setCancelled(true);
-        if (event.getSlot() == 2) {
-            AutoCrafting autoCrafting = RedstoneUtilities.getInstance().getAutoCrafting();
+        if (event.getSlot() == 1) {
+            AutoCraftingManager autoCrafting = RedstoneUtilities.getInstance().getAutoCraftingManager();
             RecipeChangeManager recipeChangeManager = autoCrafting.getRecipeChangeManager();
             recipeChangeManager.register(this.player, this.blockEntity);
             this.player.openWorkbench(null, true);
+        } else if (event.getSlot() == 3) {
+            UpgradeGUI upgradeGUI = new UpgradeGUI(this.player, this.blockEntity);
+            upgradeGUI.setup();
+            upgradeGUI.register();
+            upgradeGUI.show();
         }
     }
 
     @Override
     public void setup() {
-        this.inv.setItem(2, RECIPE_CHANGE_ITEM);
+        this.inv.setItem(1, RECIPE_CHANGE_ITEM);
+        this.inv.setItem(3, UpgradeGUI.UPGRADE_ITEM);
     }
 }

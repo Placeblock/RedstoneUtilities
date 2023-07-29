@@ -4,12 +4,11 @@ import de.placeblock.redstoneutilities.RedstoneUtilities;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 public abstract class BlockEntityType<B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> {
@@ -34,7 +33,7 @@ public abstract class BlockEntityType<B extends BlockEntity<B, BT>, BT extends B
         return this.getBlockEntity(null);
     }
 
-    public abstract B getBlockEntity(Interaction interaction);
+    public abstract B getBlockEntity(UUID uuid);
 
     public abstract boolean canBePlaced(Player player, Location location);
 

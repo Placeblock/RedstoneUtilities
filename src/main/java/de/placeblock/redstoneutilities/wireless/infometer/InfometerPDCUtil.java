@@ -16,7 +16,7 @@ public class InfometerPDCUtil {
 
     public static void addReceiver(ItemStack item, ReceiverBlockEntity receiver) {
         ItemMeta itemMeta = item.getItemMeta();
-        PDCUUIDListUtil.addUUID(itemMeta, receiver.getUUID(), RECEIVERS_KEY);
+        PDCUUIDListUtil.addUUID(itemMeta, receiver.getUuid(), RECEIVERS_KEY);
         item.setItemMeta(itemMeta);
     }
 

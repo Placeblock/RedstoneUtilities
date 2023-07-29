@@ -1,10 +1,13 @@
 package de.placeblock.redstoneutilities.autocrafting;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityTypeRegistry;
 import de.placeblock.redstoneutilities.blockentity.EntityStructureUtil;
+import de.placeblock.redstoneutilities.upgrades.Upgrade;
+import de.placeblock.redstoneutilities.upgrades.Upgradeable;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
@@ -25,18 +28,19 @@ import java.util.*;
 
 @Setter
 @Getter
-public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> {
+public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> implements Upgradeable {
     private static final String RECIPE_ENTITY_NAME = "AUTO_CRAFTER_RECIPE";
     private static final NamespacedKey RECIPE_KEY_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "recipe_key");
     private static final NamespacedKey RECIPE_NAMESPACE_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "recipe_namespace");
     public static Vector CORNERS_VEC = new Vector(0.44, 0.44, 0.44);
     private Recipe recipe;
-    private List<ItemDisplay> recipeEntities = new ArrayList<>();
+    private List<UUID> recipeEntities = new ArrayList<>();
     private Dropper dropper;
     private BukkitTask craftScheduler;
+    Map<Upgrade, Integer> upgrades = new HashMap<>();
 
-    public AutoCrafterBlockEntity(BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> type, Interaction interaction) {
-        super(type, interaction);
+    public AutoCrafterBlockEntity(BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> type, UUID uuid) {
+        super(type, uuid);
     }
 
     public void setRecipe(Recipe recipe) {
@@ -85,7 +89,8 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
             id.setItemStack(new ItemStack(material));
             id.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f((float) (Math.PI/2F), 1, 0 ,0), new Vector3f(0.1F, 0.1F, 0.1F), new AxisAngle4f()));
             BlockEntityTypeRegistry.setType(id, RECIPE_ENTITY_NAME);
-            this.recipeEntities.add(id);
+            id.setBrightness(new Display.Brightness(15, 15));
+            this.recipeEntities.add(id.getUniqueId());
             this.entityStructure.add(id.getUniqueId());
         });
     }
@@ -114,9 +119,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     }
 
     private void removeRecipeEntities() {
-        for (ItemDisplay recipeEntity : this.recipeEntities) {
-            recipeEntity.remove();
-        }
+        Util.removeEntities(this.recipeEntities);
         this.recipeEntities.clear();
     }
 
@@ -128,11 +131,17 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     }
 
     private void craftCycle() {
-        if (this.canCraft()) {
-            this.removeItemsForRecipe();
-            this.craftItem();
+        Integer efficiencyLevel = this.getUpgradeLevel(Upgrade.EFFICIENCY, 0);
+        for (int i = 0; i < efficiencyLevel + 1; i++) {
+            if (this.canCraft()) {
+                this.removeItemsForRecipe();
+                this.craftItem();
+            }
         }
-        this.craftScheduler = Bukkit.getScheduler().runTaskLater(RedstoneUtilities.getInstance(), this::craftCycle, 20);
+        Integer speedLevel = this.getUpgradeLevel(Upgrade.SPEED, 0);
+        int speedMaxLevel = Upgrade.SPEED.getMaxLevel();
+        int delay = ((speedMaxLevel - speedLevel) * 33) + 4;
+        this.craftScheduler = Bukkit.getScheduler().runTaskLater(RedstoneUtilities.getInstance(), this::craftCycle, delay);
     }
 
     private boolean canCraft() {
@@ -232,10 +241,10 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
         Location craftingDisplayLoc = location.clone().add(-0.005, -1.005, -0.005);
         Location outputDisplayLoc = location.clone().add(0.25, -1.01, 0.25);
 
-        this.interaction = world.spawn(interactionLocation, Interaction.class, i -> {
+        this.uuid = world.spawn(interactionLocation, Interaction.class, i -> {
             i.setInteractionWidth(1.011F);
             i.setInteractionHeight(0.05F);
-        });
+        }).getUniqueId();
         world.spawn(craftingDisplayLoc, BlockDisplay.class, bd -> {
             bd.setBlock(Material.CRAFTING_TABLE.createBlockData());
             bd.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(1.01F, 1.01F, 1.01F), new AxisAngle4f()));
@@ -271,23 +280,21 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     @Override
     public void load() {
         super.load();
+        this.loadUpgrades();
         Interaction interaction = this.getInteraction();
-        List<Entity> entities = EntityStructureUtil.getEntities(interaction, RECIPE_ENTITY_NAME);
-        if (entities != null) {
-            List<ItemDisplay> itemDisplays = new ArrayList<>();
-            for (Entity entity : entities) {
-                itemDisplays.add((ItemDisplay) entity);
-            }
-            this.setRecipeEntities(itemDisplays);
-        }
-        PersistentDataContainer pdc = this.interaction.getPersistentDataContainer();
+        List<UUID> recipeEntities = EntityStructureUtil.getEntityUUIDs(interaction, RECIPE_ENTITY_NAME);
+        this.setRecipeEntities(recipeEntities);
+        PersistentDataContainer pdc = interaction.getPersistentDataContainer();
         String recipeNamespace = pdc.get(RECIPE_NAMESPACE_KEY, PersistentDataType.STRING);
         String recipeKey = pdc.get(RECIPE_KEY_KEY, PersistentDataType.STRING);
         if (recipeNamespace != null && recipeKey != null) {
             NamespacedKey recipeNamespacedKey = new NamespacedKey(recipeNamespace, recipeKey);
             this.recipe = Bukkit.getRecipe(recipeNamespacedKey);
         }
-        this.dropper = ((Dropper) this.getBlockLocation().getBlock().getState());
+        Block block = this.getBlockLocation().getBlock();
+        if (block.getState() instanceof Dropper adropper) {
+            this.dropper = adropper;
+        }
 
         Bukkit.getScheduler().runTaskLater(RedstoneUtilities.getInstance(), this::craftCycle, 20);
     }
@@ -295,17 +302,13 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     @Override
     public void store() {
         super.store();
+        this.storeUpgrades();
         NamespacedKey recipeKey = this.getRecipeKey();
         if (recipeKey != null) {
-            PersistentDataContainer pdc = this.interaction.getPersistentDataContainer();
+            PersistentDataContainer pdc = this.getInteraction().getPersistentDataContainer();
             pdc.set(RECIPE_NAMESPACE_KEY, PersistentDataType.STRING, recipeKey.getNamespace());
             pdc.set(RECIPE_KEY_KEY, PersistentDataType.STRING, recipeKey.getKey());
         }
-    }
-
-    @Override
-    public void remove(Player player, boolean drop) {
-        super.remove(player, drop);
     }
 
     @Override
@@ -313,5 +316,20 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
         if (this.craftScheduler != null) {
             this.craftScheduler.cancel();
         }
+    }
+
+    @Override
+    public void beforeUpgrade(Upgrade upgrade, Integer level) {
+
+    }
+
+    @Override
+    public void afterUpgrade(Upgrade upgrade, Integer level) {
+
+    }
+
+    @Override
+    public List<Upgrade> getAllowedUpgrades() {
+        return List.of(Upgrade.SPEED, Upgrade.EFFICIENCY);
     }
 }

@@ -12,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
@@ -27,8 +26,8 @@ import java.util.UUID;
 @Setter
 public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, SenderBlockEntityType> {
     private List<ReceiverBlockEntity> receivers = new ArrayList<>();
-    public SenderBlockEntity(SenderBlockEntityType type, Interaction interaction) {
-        super(type, interaction);
+    public SenderBlockEntity(SenderBlockEntityType type, UUID uuid) {
+        super(type, uuid);
     }
 
     public void summonParticles() {
@@ -63,13 +62,13 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
 
     @Override
     public void remove(Player player, boolean drop) {
-        super.remove(player, drop);
         for (ReceiverBlockEntity receiver : this.receivers) {
             receiver.getSenders().remove(this);
-            Wireless wireless = RedstoneUtilities.getInstance().getWireless();
-            ConnectorHandler connectorHandler = wireless.getConnectorHandler();
-            connectorHandler.giveCost(player, this.interaction.getLocation(), receiver.getBlockLocation());
+            WirelessManager wirelessManager = RedstoneUtilities.getInstance().getWirelessManager();
+            ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
+            connectorHandler.giveCost(player, this.getInteraction().getLocation(), receiver.getBlockLocation());
         }
+        super.remove(player, drop);
     }
 
     @Override
@@ -79,8 +78,8 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
 
     @Override
     protected void handleConnectorInteraction(Player player) {
-        Wireless wireless = RedstoneUtilities.getInstance().getWireless();
-        ConnectorHandler connectorHandler = wireless.getConnectorHandler();
+        WirelessManager wirelessManager = RedstoneUtilities.getInstance().getWirelessManager();
+        ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
         if (connectorHandler.hasPlayer(player)) return;
 
         connectorHandler.addPlayer(player, this, player.isSneaking());
@@ -90,13 +89,13 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
     @Override
     public void load() {
         super.load();
-        this.receivers = WirelessPDCUtil.getReceivers(this.interaction);
+        this.receivers = WirelessPDCUtil.getReceivers(this.getInteraction());
     }
 
     @Override
     public void store() {
         super.store();
-        List<UUID> receiverUUIDs = this.receivers.stream().map(BlockEntity::getUUID).toList();
-        WirelessPDCUtil.setReceivers(this.interaction, receiverUUIDs);
+        List<UUID> receiverUUIDs = this.receivers.stream().map(BlockEntity::getUuid).toList();
+        WirelessPDCUtil.setReceivers(this.getInteraction(), receiverUUIDs);
     }
 }

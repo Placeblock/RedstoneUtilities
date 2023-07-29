@@ -33,7 +33,7 @@ public class ConnectorHandler implements Listener {
     private final Map<Player, ConnectorInfo> players = new HashMap<>();
 
     public void start(Plugin plugin) {
-        this.actionBarTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        this.actionBarTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             for (Map.Entry<Player, ConnectorInfo> entry : this.players.entrySet()) {
                 Player player = entry.getKey();
                 if (entry.getValue().isDestroying()) continue;
@@ -84,7 +84,7 @@ public class ConnectorHandler implements Listener {
         player.sendMessage(Messages.REDSTONE_RECEIVED);
     }
 
-    public void stop() {
+    public void disable() {
         if (this.actionBarTask == null) return;
         this.actionBarTask.cancel();
     }

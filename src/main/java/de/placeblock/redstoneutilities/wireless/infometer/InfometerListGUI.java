@@ -107,7 +107,7 @@ public class InfometerListGUI extends GUI {
         for (ReceiverBlockEntity receiver : receivers) {
             Material material = receiver.getWirelessType();
             String name = receiver.getWirelessName();
-            items.add(this.getItem(receiver.getUUID(), name, material, receiver.getBlockLocation()));
+            items.add(this.getItem(receiver.getUuid(), name, material, receiver.getBlockLocation()));
         }
         this.items = items;
     }

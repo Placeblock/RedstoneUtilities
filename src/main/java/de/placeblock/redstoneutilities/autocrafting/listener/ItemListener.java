@@ -43,9 +43,8 @@ public class ItemListener implements Listener {
             event.setCancelled(true);
             ItemStack itemCopy = event.getItem().clone();
 
-            Bukkit.getScheduler().runTaskLater(RedstoneUtilities.getInstance(), () -> {
-                this.handleItemMove(event.getItem(), event.getDestination(), itemCopy, blockEntity);
-            }, 1);
+            Bukkit.getScheduler().runTaskLater(RedstoneUtilities.getInstance(), () ->
+                this.handleItemMove(event.getItem(), event.getDestination(), itemCopy, blockEntity), 1);
         }
     }
 
@@ -104,6 +103,7 @@ public class ItemListener implements Listener {
         } else {
             item = event.getCursor();
         }
+        if (item == null) return;
         this.handleItemMove(item, inventory, item.clone(), blockEntity);
     }
 
@@ -134,7 +134,6 @@ public class ItemListener implements Listener {
     }
 
     private void handleItemDrag(InventoryDragEvent event, AutoCrafterBlockEntity blockEntity, Map<Integer, ItemStack> newItems) {
-
         Inventory inventory = event.getInventory();
         int splitAmount = 0;
         for (Map.Entry<Integer, ItemStack> entry : newItems.entrySet()) {

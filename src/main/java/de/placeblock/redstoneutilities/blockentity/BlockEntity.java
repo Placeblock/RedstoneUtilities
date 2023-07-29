@@ -20,17 +20,13 @@ import java.util.UUID;
 public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> {
 
     protected final BlockEntityType<B, BT> type;
-    protected Interaction interaction;
+    protected UUID uuid;
     @Setter
     protected List<UUID> entityStructure = new ArrayList<>();
 
-    public BlockEntity(BlockEntityType<B, BT> type, Interaction interaction) {
+    public BlockEntity(BlockEntityType<B, BT> type, UUID uuid) {
         this.type = type;
-        this.interaction = interaction;
-    }
-
-    public UUID getUUID() {
-        return this.interaction.getUniqueId();
+        this.uuid = uuid;
     }
 
     public void remove(Player player) {
@@ -53,18 +49,22 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         for (Entity entity : this.getStructureEntities()) {
             entity.remove();
         }
-        this.interaction.remove();
         if (drop) {
             this.drop();
         }
+        this.getInteraction().remove();
+    }
+
+    public Interaction getInteraction() {
+        return (Interaction) Bukkit.getEntity(this.uuid);
     }
 
     public Location getCenterLocation() {
-        return this.interaction.getLocation().toCenterLocation();
+        return this.getInteraction().getLocation().toCenterLocation();
     }
 
     public Location getBlockLocation() {
-        return this.interaction.getLocation().toBlockLocation();
+        return this.getInteraction().getLocation().toBlockLocation();
     }
 
     public abstract void onInteract(PlayerInteractAtEntityEvent event);
@@ -78,11 +78,11 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
     public abstract void summon(Location location);
 
     public void load() {
-        this.setEntityStructure(EntityStructureUtil.getEntityUUIDs(this.interaction));
+        this.setEntityStructure(EntityStructureUtil.getEntityUUIDs(this.getInteraction()));
     }
 
     public void store() {
-        EntityStructureUtil.setEntities(this.interaction, this.entityStructure);
+        EntityStructureUtil.setEntities(this.getInteraction(), this.entityStructure);
     }
 
     public abstract void disable();

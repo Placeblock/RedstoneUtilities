@@ -4,8 +4,9 @@ import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.wireless.WirelessBlockEntityType;
 import org.bukkit.Location;
-import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class ReceiverBlockEntityType extends WirelessBlockEntityType<ReceiverBlockEntity, ReceiverBlockEntityType> {
     public ReceiverBlockEntityType(RedstoneUtilities plugin) {
@@ -13,8 +14,8 @@ public class ReceiverBlockEntityType extends WirelessBlockEntityType<ReceiverBlo
     }
 
     @Override
-    public ReceiverBlockEntity getBlockEntity(Interaction interaction) {
-        return new ReceiverBlockEntity(this, interaction);
+    public ReceiverBlockEntity getBlockEntity(UUID uuid) {
+        return new ReceiverBlockEntity(this, uuid);
     }
 
     @Override
