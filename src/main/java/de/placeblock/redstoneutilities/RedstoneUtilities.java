@@ -73,6 +73,8 @@ public class RedstoneUtilities extends JavaPlugin {
             this.chunkLoaderManager.setup(this);
         }
         this.getLogger().info("Created BlockEntity Managers");
+
+        this.startAutoSave();
     }
 
     private void startAutoSave() {

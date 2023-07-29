@@ -103,7 +103,7 @@ public interface Upgradeable {
             Upgrade upgrade = upgradeEntry.getKey();
             Integer level = upgradeEntry.getValue();
             for (int i = level; i > 0; i--) {
-                ItemStack item = upgrade.getItem(level);
+                ItemStack item = upgrade.getItem(i);
                 world.dropItem(interaction.getLocation(), item);
             }
         }

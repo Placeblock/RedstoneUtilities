@@ -22,7 +22,7 @@ public enum Upgrade {
     }
 
     public ItemStack getItem(int level) {
-        return this.items.get(level);
+        return this.items.get(level-1);
     }
 
     public static Upgrade getUpgrade(Material material) {
