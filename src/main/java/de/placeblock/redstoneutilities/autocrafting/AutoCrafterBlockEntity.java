@@ -317,6 +317,11 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
             this.craftScheduler.cancel();
         }
     }
+    @Override
+    public void remove(Player player, boolean drop) {
+        this.dropUpgradeItems();
+        super.remove(player, drop);
+    }
 
     @Override
     public void beforeUpgrade(Upgrade upgrade, Integer level) {

@@ -14,6 +14,8 @@ public class ChunkLoaderManager implements BlockEntityManager {
         pluginManager.registerEvents(this.chunkLoaderListener, plugin);
 
         new ChunkLoaderRecipe().register();
+
+        plugin.getBlockEntityTypeRegistry().register(new ChunkLoaderBlockEntityType(plugin));
     }
 
     @Override

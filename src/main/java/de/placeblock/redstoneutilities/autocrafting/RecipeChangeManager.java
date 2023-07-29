@@ -22,7 +22,7 @@ public class RecipeChangeManager implements Listener {
     @EventHandler
     public void on(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)
-            || event.getInventory().getType() != InventoryType.CRAFTING
+            || event.getInventory().getType() != InventoryType.WORKBENCH
             || !this.players.containsKey(player)) return;
         this.players.remove(player);
     }

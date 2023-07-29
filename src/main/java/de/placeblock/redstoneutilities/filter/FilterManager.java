@@ -10,9 +10,12 @@ public class FilterManager implements BlockEntityManager {
 
     public void setup(RedstoneUtilities plugin) {
         new FilterRecipe().register();
+
         PluginManager pluginManager = plugin.getServer().getPluginManager();
         this.filterListener = new FilterListener();
         pluginManager.registerEvents(this.filterListener, plugin);
+
+        plugin.getBlockEntityTypeRegistry().register(new FilterBlockEntityType(plugin));
     }
 
     @Override

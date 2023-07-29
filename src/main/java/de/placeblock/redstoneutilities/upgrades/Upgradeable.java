@@ -2,6 +2,7 @@ package de.placeblock.redstoneutilities.upgrades;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.Interaction;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -90,6 +91,21 @@ public interface Upgradeable {
     }
 
     default ItemStack getNextLevelItem(Upgrade upgrade) {
-        return upgrade.getItem(this.getUpgradeLevel(upgrade, 0));
+        return upgrade.getItem(this.getUpgradeLevel(upgrade, 0)+1);
+    }
+
+
+    default void dropUpgradeItems() {
+        Interaction interaction = this.getInteraction();
+        World world = interaction.getWorld();
+        Map<Upgrade, Integer> upgrades = this.getUpgrades();
+        for (Map.Entry<Upgrade, Integer> upgradeEntry : upgrades.entrySet()) {
+            Upgrade upgrade = upgradeEntry.getKey();
+            Integer level = upgradeEntry.getValue();
+            for (int i = level; i > 0; i--) {
+                ItemStack item = upgrade.getItem(level);
+                world.dropItem(interaction.getLocation(), item);
+            }
+        }
     }
 }

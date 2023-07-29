@@ -39,14 +39,14 @@ public class UpgradeItems {
     }
 
     public static void registerRecipes(Upgrade upgrade) {
-        for (int i = 0; i < upgrade.getMaxLevel(); i++) {
-            Material material = levelMaterials.get(i);
-            registerUpgradeRecipe(upgrade, i, material);
+        for (int level = 1; level <= upgrade.getMaxLevel(); level++) {
+            Material material = levelMaterials.get(level-1);
+            registerUpgradeRecipe(upgrade, level, material);
         }
     }
 
     private static void registerUpgradeRecipe(Upgrade upgrade, int level, Material levelMat) {
-        NamespacedKey key = new NamespacedKey(RedstoneUtilities.getInstance(), upgrade.toString()+"_upgrade_"+level);
+        NamespacedKey key = new NamespacedKey(RedstoneUtilities.getInstance(), upgrade.toString()+"_upgrade_"+(level-1));
         ItemStack item = upgrade.getItem(level).clone();
         item.setAmount(2);
         ShapedRecipe recipe = new ShapedRecipe(key, item);

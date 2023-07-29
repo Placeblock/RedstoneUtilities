@@ -37,6 +37,7 @@ public abstract class GUI implements Listener {
 
     @EventHandler
     public void on(InventoryClickEvent event) {
+        if (!event.getWhoClicked().equals(this.player)) return;
         this.onClick(event);
     }
 

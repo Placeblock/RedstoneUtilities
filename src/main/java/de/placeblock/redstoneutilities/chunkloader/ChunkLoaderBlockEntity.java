@@ -16,6 +16,7 @@ import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Interaction;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
@@ -103,6 +104,13 @@ public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, 
     @Override
     public void disable() {
 
+    }
+
+    @Override
+    public void remove(Player player, boolean drop) {
+        this.removeForceLoad();
+        this.dropUpgradeItems();
+        super.remove(player, drop);
     }
 
     @Override

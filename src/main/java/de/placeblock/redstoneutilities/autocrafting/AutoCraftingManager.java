@@ -15,11 +15,14 @@ public class AutoCraftingManager implements BlockEntityManager {
 
     public void setup(RedstoneUtilities plugin) {
         new AutoCrafterRecipe().register();
+
         this.recipeChangeManager = new RecipeChangeManager();
         PluginManager pluginManager = plugin.getServer().getPluginManager();
         pluginManager.registerEvents(this.recipeChangeManager, plugin);
         this.itemListener = new ItemListener();
         pluginManager.registerEvents(this.itemListener, plugin);
+
+        plugin.getBlockEntityTypeRegistry().register(new AutoCrafterBlockEntityType(plugin));
     }
 
     @Override

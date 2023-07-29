@@ -4,10 +4,12 @@ import de.placeblock.redstoneutilities.BlockEntityManager;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.wireless.listener.InfometerListener;
 import de.placeblock.redstoneutilities.wireless.listener.RedstoneListener;
+import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntityType;
 import de.placeblock.redstoneutilities.wireless.recipes.ConnectorRecipe;
 import de.placeblock.redstoneutilities.wireless.recipes.InfometerRecipe;
 import de.placeblock.redstoneutilities.wireless.recipes.ReceiverRecipe;
 import de.placeblock.redstoneutilities.wireless.recipes.SenderRecipe;
+import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntityType;
 import lombok.Getter;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
@@ -35,6 +37,8 @@ public class WirelessManager implements BlockEntityManager {
         new ConnectorRecipe().register();
         new InfometerRecipe().register();
 
+        plugin.getBlockEntityTypeRegistry().register(new ReceiverBlockEntityType(plugin));
+        plugin.getBlockEntityTypeRegistry().register(new SenderBlockEntityType(plugin));
     }
 
     @Override
