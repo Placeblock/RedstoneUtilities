@@ -50,7 +50,7 @@ public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, 
     }
 
     public List<Chunk> getChunks() {
-        int reach = this.getUpgradeLevel(Upgrade.EFFICIENCY, 0)/2;
+        int reach = this.getUpgradeLevel(Upgrade.EFFICIENCY, 0)/3;
         return Util.getChunks(this.getCenterChunk(), reach);
     }
 
