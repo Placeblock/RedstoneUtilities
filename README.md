@@ -71,6 +71,7 @@ If there is now filter set, every item will be accepted!
 ### ChunkLoader
 
 The ChunkLoader can be placed just as a block. It loads a specific amount of chunks.
+The Chunks tick too, which means plats grow and entities spawn.
 By right-clicking on the ChunkLoader you can upgrade it. The following upgrades are
 possible:
 - Efficiency (More chunks will be loaded: <code>Chunk-Square-Radius = Level / 3</code>)
@@ -78,10 +79,10 @@ possible:
 The loaded Chunks have the shape of a square. The different levels 
 produce the following squares:
 1. 1x1
-2. 3x3
+2. 1x1
 3. 3x3
 4. 3x3
-5. 5x5
+5. 3x3
 6. 5x5
 
 <a href="https://ibb.co/yXgNvkD">
