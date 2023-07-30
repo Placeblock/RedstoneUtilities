@@ -78,10 +78,10 @@ possible:
 The loaded Chunks have the shape of a square. The different levels 
 produce the following squares:
 1. 1x1
-2. 3x3
+2. 1x1
 3. 3x3
 4. 3x3
-5. 5x5
+5. 3x3
 6. 5x5
 
 <a href="https://ibb.co/yXgNvkD">
