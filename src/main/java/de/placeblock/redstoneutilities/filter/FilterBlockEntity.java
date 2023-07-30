@@ -57,6 +57,7 @@ public class FilterBlockEntity extends BlockEntity<FilterBlockEntity, FilterBloc
 
     private void removeFilterEntities() {
         Util.removeEntities(this.filterEntities);
+        this.entityStructure.removeAll(this.filterEntities);
         this.filterEntities.clear();
     }
     private void summonFilterEntities() {

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.block.*;
+import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftShapedRecipe;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.*;
@@ -120,6 +121,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
 
     private void removeRecipeEntities() {
         Util.removeEntities(this.recipeEntities);
+        this.entityStructure.removeAll(this.recipeEntities);
         this.recipeEntities.clear();
     }
 
@@ -134,8 +136,8 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
         Integer efficiencyLevel = this.getUpgradeLevel(Upgrade.EFFICIENCY, 0);
         for (int i = 0; i < efficiencyLevel + 1; i++) {
             if (this.canCraft()) {
-                this.removeItemsForRecipe();
-                this.craftItem();
+                List<Material> removedItems = this.removeItemsForRecipe();
+                this.craftItem(removedItems);
             }
         }
         Integer speedLevel = this.getUpgradeLevel(Upgrade.SPEED, 0);
@@ -172,7 +174,8 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
         return true;
     }
 
-    private void removeItemsForRecipe() {
+    private List<Material> removeItemsForRecipe() {
+        List<Material> removedItems = new ArrayList<>();
         Inventory inventory = this.dropper.getInventory();
         inventory.getItem(0);
         if (this.recipe instanceof ShapedRecipe shapedRecipe) {
@@ -182,6 +185,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
                 RecipeChoice choice = RecipeUtil.getChoice(shapedRecipe, i);
                 if (choice == null) continue;
                 if (choice.test(item)) {
+                    removedItems.add(item.getType());
                     item.setAmount(item.getAmount()-1);
                     inventory.setItem(i, item);
                 }
@@ -208,17 +212,24 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
                     items.remove(index);
                     ItemStack item = inventory.getItem(index);
                     assert item != null;
+                    removedItems.add(item.getType());
                     item.setAmount(item.getAmount()-1);
                 }
             }
-
         }
+        return removedItems;
     }
 
-    private void craftItem() {
+    private void craftItem(List<Material> removedItems) {
         Block bottomBlock = this.dropper.getBlock().getRelative(BlockFace.DOWN);
         if (bottomBlock.getState() instanceof Container container) {
             Inventory inventory = container.getInventory();
+            for (Material removedItem : removedItems) {
+                Material remaining = removedItem.getCraftingRemainingItem();
+                if (remaining != null) {
+                    inventory.addItem(new ItemStack(remaining));
+                }
+            }
             inventory.addItem(this.recipe.getResult());
         }
     }
