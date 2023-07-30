@@ -3,6 +3,7 @@ package de.placeblock.redstoneutilities.blockentity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -33,12 +34,14 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         this.remove(player, true);
     }
 
-    public List<Entity> getStructureEntities() {
+    public List<Entity> getStructureEntities(Player player) {
         List<Entity> entities = new ArrayList<>();
         for (UUID uuid : this.entityStructure) {
             Entity entity = Bukkit.getEntity(uuid);
             if (entity != null) {
                 entities.add(entity);
+            } else {
+                player.sendMessage(Component.text("Kein Entity gefunden für UUID: " + uuid));
             }
         }
         return entities;
@@ -46,7 +49,7 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
 
     public void remove(Player player, boolean drop) {
         this.disable();
-        for (Entity entity : this.getStructureEntities()) {
+        for (Entity entity : this.getStructureEntities(player)) {
             entity.remove();
         }
         if (drop) {

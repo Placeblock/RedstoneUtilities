@@ -2,6 +2,8 @@ package de.placeblock.redstoneutilities;
 import de.placeblock.redstoneutilities.autocrafting.AutoCraftingManager;
 import de.placeblock.redstoneutilities.blockentity.*;
 import de.placeblock.redstoneutilities.chunkloader.ChunkLoaderManager;
+import de.placeblock.redstoneutilities.command.BlockEntityStructureCommand;
+import de.placeblock.redstoneutilities.command.NearbyEntityUUIDCommand;
 import de.placeblock.redstoneutilities.filter.FilterManager;
 import de.placeblock.redstoneutilities.upgrades.Upgrade;
 import de.placeblock.redstoneutilities.upgrades.UpgradeItems;
@@ -14,6 +16,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Objects;
 
 @Getter
 public class RedstoneUtilities extends JavaPlugin {
@@ -75,11 +79,17 @@ public class RedstoneUtilities extends JavaPlugin {
         this.getLogger().info("Created BlockEntity Managers");
 
         this.startAutoSave();
+
+        Objects.requireNonNull(this.getCommand("bes")).setExecutor(new BlockEntityStructureCommand());
+        Objects.requireNonNull(this.getCommand("euuid")).setExecutor(new NearbyEntityUUIDCommand());
     }
 
     private void startAutoSave() {
         int interval = this.getConfig().getInt("blockentity-autosave-interval", -1);
-        if (interval == -1) return;
+        if (interval == -1) {
+            this.getLogger().warning("Autosave interval was set to -1... stopping autosave");
+            return;
+        }
         if (interval < 20) {
             this.getLogger().warning("Autosave interval was set to <20... stopping autosave");
             return;

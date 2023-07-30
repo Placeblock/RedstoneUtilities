@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.chunkloader;
 
+import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
@@ -8,11 +9,11 @@ import de.placeblock.redstoneutilities.upgrades.UpgradeGUI;
 import de.placeblock.redstoneutilities.upgrades.Upgradeable;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.chunk.LevelChunk;
+import org.bukkit.*;
 import org.bukkit.block.data.type.RespawnAnchor;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Interaction;
@@ -57,13 +58,25 @@ public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, 
 
     public void setForceLoad() {
         for (Chunk chunk : this.getChunks()) {
-            chunk.setForceLoaded(true);
+            chunk.addPluginChunkTicket(RedstoneUtilities.getInstance());
         }
     }
 
     public void removeForceLoad() {
         for (Chunk chunk : this.getChunks()) {
-            chunk.setForceLoaded(false);
+            chunk.removePluginChunkTicket(RedstoneUtilities.getInstance());
+        }
+    }
+
+    public void tickChunks() {
+        List<Chunk> chunks = this.getChunks();
+        Chunk firstChunk = chunks.get(0);
+        Integer randomTickSpeed = firstChunk.getWorld().getGameRuleValue(GameRule.RANDOM_TICK_SPEED);
+        ServerLevel serverLevel = ((CraftWorld) firstChunk.getWorld()).getHandle();
+        if (randomTickSpeed == null) return;
+        for (Chunk chunk : chunks) {
+            LevelChunk levelChunk = serverLevel.getChunk(chunk.getX(), chunk.getZ());
+            serverLevel.tickChunk(levelChunk, randomTickSpeed);
         }
     }
 
@@ -99,16 +112,16 @@ public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, 
     public void load() {
         super.load();
         this.loadUpgrades();
+        this.setForceLoad();
     }
 
     @Override
     public void disable() {
-
+        this.removeForceLoad();
     }
 
     @Override
     public void remove(Player player, boolean drop) {
-        this.removeForceLoad();
         this.dropUpgradeItems();
         super.remove(player, drop);
     }

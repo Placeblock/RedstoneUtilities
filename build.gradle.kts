@@ -13,6 +13,14 @@ bukkit {
     apiVersion = "1.20"
     authors = listOf("Placeblock")
     name = "RedstoneUtilities"
+    commands {
+        register("bes") {
+            permission = "redstoneutilities.debug"
+        }
+        register("euuid") {
+            permission = "redstoneutilities.debug"
+        }
+    }
 }
 
 group = "de.placeblock"
