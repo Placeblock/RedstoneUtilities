@@ -12,9 +12,6 @@ import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.UUID;
-
 public class BlockEntityStructureCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -24,8 +21,7 @@ public class BlockEntityStructureCommand implements CommandExecutor {
         if (!(targetEntity instanceof Interaction interaction)) return false;
         BlockEntity<?, ?> blockEntity = blockEntityRegistry.get(interaction);
         if (blockEntity != null) {
-            List<UUID> entityStructure = blockEntity.getEntityStructure();
-            player.sendMessage(Component.text(entityStructure.toString()));
+            player.sendMessage(Component.text(blockEntity.toString()));
             return true;
         }
         return false;

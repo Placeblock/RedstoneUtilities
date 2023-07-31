@@ -62,7 +62,11 @@ public class BlockEntityRegistry {
     }
 
     public void remove(Interaction interaction) {
-        this.blockEntities.remove(interaction.getUniqueId());
+        this.remove(interaction.getUniqueId());
+    }
+
+    public void remove(UUID uuid) {
+        this.blockEntities.remove(uuid);
     }
 
 }

@@ -90,4 +90,12 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
 
     public abstract void disable();
 
+    @Override
+    public String toString() {
+        return "BlockEntity{" +
+                "type=" + type +
+                ", uuid=" + uuid +
+                ", entityStructure=" + entityStructure +
+                '}';
+    }
 }

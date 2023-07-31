@@ -41,17 +41,17 @@ public class ItemListener implements Listener {
             AutoCrafterBlockEntity blockEntity = this.getBlockEntity(dropper);
             if (blockEntity == null) return;
             event.setCancelled(true);
+            if (!dropper.getChunk().isLoaded()) return;
             ItemStack itemCopy = event.getItem().clone();
 
             Bukkit.getScheduler().runTaskLater(RedstoneUtilities.getInstance(), () ->
-                this.handleItemMove(event.getItem(), event.getDestination(), itemCopy, blockEntity), 1);
+                this.handleItemMove(event.getItem(), dropper.getInventory(), itemCopy, blockEntity), 1);
         }
     }
 
-    private int handleItemMove(ItemStack initiatorItem, Inventory destination, ItemStack item, AutoCrafterBlockEntity blockEntity) {
+    private int handleItemMove(ItemStack initiatorItem, Inventory inventory, ItemStack item, AutoCrafterBlockEntity blockEntity) {
         int invalidItems = 0;
         for (int i = 0; i < item.getAmount(); i++) {
-            Inventory inventory = blockEntity.getDropper().getInventory();
             Recipe recipe = blockEntity.getRecipe();
             int bestSlot = RecipeUtil.findBestSlot(inventory, recipe, item);
             if (bestSlot == -1) {
@@ -61,11 +61,11 @@ public class ItemListener implements Listener {
             if (initiatorItem != null) {
                 initiatorItem.setAmount(initiatorItem.getAmount()-1);
             }
-            ItemStack slotItem = destination.getItem(bestSlot);
+            ItemStack slotItem = inventory.getItem(bestSlot);
             if (slotItem == null) {
                 ItemStack itemClone = item.clone();
                 itemClone.setAmount(1);
-                destination.setItem(bestSlot, itemClone);
+                inventory.setItem(bestSlot, itemClone);
             } else {
                 slotItem.setAmount(slotItem.getAmount() + 1);
             }

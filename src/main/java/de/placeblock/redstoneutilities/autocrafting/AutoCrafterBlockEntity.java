@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.block.*;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftShapedRecipe;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.*;
@@ -36,7 +35,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     public static Vector CORNERS_VEC = new Vector(0.44, 0.44, 0.44);
     private Recipe recipe;
     private List<UUID> recipeEntities = new ArrayList<>();
-    private Dropper dropper;
+    private Location dropperLoc;
     private BukkitTask craftScheduler;
     Map<Upgrade, Integer> upgrades = new HashMap<>();
 
@@ -52,6 +51,14 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
         this.recipe = recipe;
         this.removeRecipeEntities();
         this.summonRecipeEntities();
+    }
+
+    public Dropper getDropper() {
+        Block block = this.dropperLoc.getBlock();
+        if (block.getState() instanceof Dropper dropper) {
+            return dropper;
+        }
+        return null;
     }
 
     private void summonRecipeEntities() {
@@ -148,11 +155,11 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
 
     private boolean canCraft() {
         if (this.recipe == null ||
-            !this.dropper.getChunk().isLoaded()) return false;
-        Block belowBlock = this.dropper.getBlock().getRelative(BlockFace.DOWN);
+            !this.dropperLoc.isChunkLoaded()) return false;
+        Block belowBlock = this.getDropperLoc().getBlock().getRelative(BlockFace.DOWN);
         if (!(belowBlock.getState() instanceof Hopper container)
             || !RecipeUtil.canAddItem(container.getInventory(), this.recipe)) return false;
-        Inventory inventory = this.dropper.getInventory();
+        Inventory inventory = this.getDropper().getInventory();
         if (this.recipe instanceof ShapedRecipe shapedRecipe) {
             for (int i = 0; i < 9; i++) {
                 RecipeChoice choice = RecipeUtil.getChoice(shapedRecipe, i);
@@ -176,7 +183,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
 
     private List<Material> removeItemsForRecipe() {
         List<Material> removedItems = new ArrayList<>();
-        Inventory inventory = this.dropper.getInventory();
+        Inventory inventory = this.getDropper().getInventory();
         inventory.getItem(0);
         if (this.recipe instanceof ShapedRecipe shapedRecipe) {
             for (int i = 0; i < 9; i++) {
@@ -221,7 +228,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     }
 
     private void craftItem(List<Material> removedItems) {
-        Block bottomBlock = this.dropper.getBlock().getRelative(BlockFace.DOWN);
+        Block bottomBlock = this.dropperLoc.getBlock().getRelative(BlockFace.DOWN);
         if (bottomBlock.getState() instanceof Container container) {
             Inventory inventory = container.getInventory();
             for (Material removedItem : removedItems) {
@@ -302,10 +309,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
             NamespacedKey recipeNamespacedKey = new NamespacedKey(recipeNamespace, recipeKey);
             this.recipe = Bukkit.getRecipe(recipeNamespacedKey);
         }
-        Block block = this.getBlockLocation().getBlock();
-        if (block.getState() instanceof Dropper adropper) {
-            this.dropper = adropper;
-        }
+        this.dropperLoc = this.getBlockLocation();
 
         Bukkit.getScheduler().runTaskLater(RedstoneUtilities.getInstance(), this::craftCycle, 20);
     }
@@ -347,5 +351,15 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     @Override
     public List<Upgrade> getAllowedUpgrades() {
         return List.of(Upgrade.SPEED, Upgrade.EFFICIENCY);
+    }
+
+    @Override
+    public String toString() {
+        return "AutoCrafterBlockEntity{" +
+                "recipe=" + recipe.getResult() +
+                ", type=" + type +
+                ", uuid=" + uuid +
+                ", entityStructure=" + entityStructure +
+                '}';
     }
 }
