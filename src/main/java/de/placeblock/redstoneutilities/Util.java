@@ -102,7 +102,7 @@ public class Util {
         rotateVectors(centerLocation, count, vector, (location, rotation) ->
             world.spawn(location, ItemDisplay.class, id -> {
                 id.setItemStack(itemStack);
-                id.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(rotation, 0F, 1F, 0F), new Vector3f(size, size, size), new AxisAngle4f()));
+                id.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f((float) (Math.PI/2+rotation), 0F, 1F, 0F), new Vector3f(size, size, size), new AxisAngle4f()));
                 callback.accept(id, rotation);
             })
         );

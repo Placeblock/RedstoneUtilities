@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
 import org.bukkit.*;
 import org.bukkit.block.data.type.RespawnAnchor;
-import org.bukkit.craftbukkit.v1_20_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
@@ -29,7 +28,7 @@ import org.joml.Vector3f;
 import java.util.*;
 
 public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, ChunkLoaderBlockEntityType> implements Upgradeable {
-    public static final Vector CRYSTAL_VEC = new Vector(0, 0, 0.41);
+    public static final Vector CRYSTAL_VEC = new Vector(0.41, 0, 0);
     public static final ItemStack CRYSTAL_STACK = new ItemStack(Material.END_CRYSTAL);
     @Getter
     @Setter
