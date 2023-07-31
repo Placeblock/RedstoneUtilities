@@ -26,8 +26,8 @@ import java.util.UUID;
 @Setter
 public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, SenderBlockEntityType> {
     private List<ReceiverBlockEntity> receivers = new ArrayList<>();
-    public SenderBlockEntity(SenderBlockEntityType type, UUID uuid) {
-        super(type, uuid);
+    public SenderBlockEntity(SenderBlockEntityType type, UUID uuid, Location location) {
+        super(type, uuid, location);
     }
 
     public void summonParticles() {

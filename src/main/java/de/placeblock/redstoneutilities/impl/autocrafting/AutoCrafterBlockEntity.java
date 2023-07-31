@@ -39,8 +39,8 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     private BukkitTask craftScheduler;
     Map<Upgrade, Integer> upgrades = new HashMap<>();
 
-    public AutoCrafterBlockEntity(BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> type, UUID uuid) {
-        super(type, uuid);
+    public AutoCrafterBlockEntity(BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> type, UUID uuid, Location location) {
+        super(type, uuid, location);
     }
 
     public void setRecipe(Recipe recipe) {
@@ -155,7 +155,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
 
     private boolean canCraft() {
         if (this.recipe == null ||
-            !this.dropperLoc.isChunkLoaded()) return false;
+            !this.location.isChunkLoaded()) return false;
         Block belowBlock = this.getDropperLoc().getBlock().getRelative(BlockFace.DOWN);
         if (!(belowBlock.getState() instanceof Hopper container)
             || !RecipeUtil.canAddItem(container.getInventory(), this.recipe)) return false;
@@ -255,9 +255,9 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     public void summon(Location location) {
         World world = location.getWorld();
 
-        Location interactionLocation = location.clone().add(0.5, -0.025, 0.5);
-        Location craftingDisplayLoc = location.clone().add(-0.005, -1.005, -0.005);
-        Location outputDisplayLoc = location.clone().add(0.25, -1.01, 0.25);
+        Location interactionLocation = location.clone().add(0.5, 0.975, 0.5);
+        Location craftingDisplayLoc = location.clone().add(-0.005, -0.005, -0.005);
+        Location outputDisplayLoc = location.clone().add(0.25, -0.01, 0.25);
 
         this.uuid = world.spawn(interactionLocation, Interaction.class, i -> {
             i.setInteractionWidth(1.011F);
@@ -277,7 +277,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
             bd.setBrightness(new Display.Brightness(15, 15));
             this.entityStructure.add(bd.getUniqueId());
         });
-        Location craftingCenterLoc = location.clone().add(0.5, -0.5, 0.5);
+        Location craftingCenterLoc = location.clone().add(0.5, 0.5, 0.5);
         this.summonIronBlocks(world, craftingCenterLoc, CORNERS_VEC);
         this.summonIronBlocks(world, craftingCenterLoc, CORNERS_VEC.multiply(-1));
     }

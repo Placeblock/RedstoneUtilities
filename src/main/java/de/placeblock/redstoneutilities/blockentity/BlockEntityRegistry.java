@@ -1,14 +1,18 @@
 package de.placeblock.redstoneutilities.blockentity;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.pdc.LocationPDCUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Interaction;
 
 import java.util.*;
 
 @RequiredArgsConstructor
 public class BlockEntityRegistry {
+    public static final NamespacedKey BLOCK_ENTITY_LOCATION_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "root_location");
 
     private final RedstoneUtilities plugin;
     @Getter
@@ -56,17 +60,18 @@ public class BlockEntityRegistry {
             this.plugin.getLogger().warning("BlockEntityType is null");
             return;
         }
-        BlockEntity<?, ?> blockEntity = type.getBlockEntity(interaction.getUniqueId());
-        this.blockEntities.put(interaction.getUniqueId(), blockEntity);
+        Location location = LocationPDCUtil.getLocation(interaction, BLOCK_ENTITY_LOCATION_KEY);
+        if (location == null) {
+            this.plugin.getLogger().warning("Location is null, using interaction Location");
+            location = interaction.getLocation();
+        }
+        BlockEntity<?, ?> blockEntity = type.getBlockEntity(interaction.getUniqueId(), location);
+        this.register(blockEntity);
         blockEntity.load();
     }
 
-    public void remove(Interaction interaction) {
-        this.remove(interaction.getUniqueId());
-    }
-
-    public void remove(UUID uuid) {
-        this.blockEntities.remove(uuid);
+    public void remove(BlockEntity<?, ?> blockEntity) {
+        this.blockEntities.remove(blockEntity.getUuid());
     }
 
 }

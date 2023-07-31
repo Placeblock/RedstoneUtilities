@@ -5,28 +5,28 @@ import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Dropper;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class AutoCrafterBlockEntityType extends BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> {
     public AutoCrafterBlockEntityType(RedstoneUtilities plugin) {
-        super(plugin, "AUTO_CRAFTER", Items.AUTOCRAFTER_ITEM, true, new ArrayList<>());
+        super(plugin, "AUTO_CRAFTER", Items.AUTOCRAFTER_ITEM, true, List.of(Material.DROPPER));
     }
 
     @Override
-    public AutoCrafterBlockEntity getBlockEntity(UUID uuid) {
-        return new AutoCrafterBlockEntity(this, uuid);
+    public AutoCrafterBlockEntity getBlockEntity(UUID uuid, Location location) {
+        return new AutoCrafterBlockEntity(this, uuid, location);
     }
 
     @Override
     public boolean canBePlaced(Player player, Location location) {
         Block block = location.getBlock();
-        if (!(block.getRelative(BlockFace.DOWN).getState() instanceof Dropper dropper)) {
+        if (!(block.getState() instanceof Dropper dropper)) {
             player.sendMessage(Component.text("Du kannst AutoCrafter nur auf Spendern plazieren.").color(RedstoneUtilities.PRIMARY_COLOR));
             return false;
         }

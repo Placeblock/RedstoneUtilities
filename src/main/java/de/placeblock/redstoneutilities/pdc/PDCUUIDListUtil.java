@@ -5,7 +5,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,7 +75,7 @@ public class PDCUUIDListUtil {
         return getUUID(uuidPDC);
     }
 
-    private static UUID getUUID(PersistentDataContainer receiverPdc) {
+    public static UUID getUUID(PersistentDataContainer receiverPdc) {
         UUID uuid = receiverPdc.get(UUID_KEY, new UUIDDataType());
         if (uuid == null) {
             RedstoneUtilities.getInstance().getLogger().warning("Tried to access UUID in PDC with insuffiecient data.");
@@ -103,8 +102,8 @@ public class PDCUUIDListUtil {
         PersistentDataContainer pdc = holder.getPersistentDataContainer();
         pdc.set(key, PersistentDataType.TAG_CONTAINER_ARRAY, locationsPDC);
     }
-    @NotNull
-    private static PersistentDataContainer getUUIDPDC(UUID uuid, PersistentDataContainer pdc) {
+
+    public static PersistentDataContainer getUUIDPDC(UUID uuid, PersistentDataContainer pdc) {
         PersistentDataContainer receiverPdc = pdc.getAdapterContext().newPersistentDataContainer();
         receiverPdc.set(UUID_KEY, new UUIDDataType(), uuid);
         return receiverPdc;

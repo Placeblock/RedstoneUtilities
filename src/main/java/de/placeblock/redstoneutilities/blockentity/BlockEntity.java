@@ -1,7 +1,7 @@
 package de.placeblock.redstoneutilities.blockentity;
 
+import de.placeblock.redstoneutilities.pdc.LocationPDCUtil;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -17,17 +17,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@RequiredArgsConstructor
 public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> {
 
     protected final BlockEntityType<B, BT> type;
     protected UUID uuid;
+    protected final Location location;
     @Setter
     protected List<UUID> entityStructure = new ArrayList<>();
 
-    public BlockEntity(BlockEntityType<B, BT> type, UUID uuid) {
+    public BlockEntity(BlockEntityType<B, BT> type, UUID uuid, Location location) {
         this.type = type;
         this.uuid = uuid;
+        this.location = location;
     }
 
     public void remove(Player player) {
@@ -63,11 +64,11 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
     }
 
     public Location getCenterLocation() {
-        return this.getInteraction().getLocation().toCenterLocation();
+        return this.location.toCenterLocation();
     }
 
     public Location getBlockLocation() {
-        return this.getInteraction().getLocation().toBlockLocation();
+        return this.location.toBlockLocation();
     }
 
     public abstract void onInteract(PlayerInteractAtEntityEvent event);
@@ -86,6 +87,7 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
 
     public void store() {
         EntityStructureUtil.setEntities(this.getInteraction(), this.entityStructure);
+        LocationPDCUtil.setLocation(this.getInteraction(), BlockEntityRegistry.BLOCK_ENTITY_LOCATION_KEY, this.location);
     }
 
     public abstract void disable();
@@ -95,6 +97,7 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         return "BlockEntity{" +
                 "type=" + type +
                 ", uuid=" + uuid +
+                ", location=" + location +
                 ", entityStructure=" + entityStructure +
                 '}';
     }

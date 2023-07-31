@@ -37,8 +37,7 @@ public class BlockEntityListener implements Listener {
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), event.getBlock().getLocation(), blockEntityType);
 
-        if (!blockEntityType.canBePlaced(player, targetLoc)) return;
-        this.createBlockEntity(blockEntityType, targetLoc);
+        this.createBlockEntity(blockEntityType, targetLoc, player);
     }
 
     @EventHandler
@@ -61,8 +60,7 @@ public class BlockEntityListener implements Listener {
 
         Location targetLoc = this.getTargetLocation(clickedBlock.getLocation(), placedBlock.getLocation(), blockEntityType);
 
-        if (!blockEntityType.canBePlaced(player, targetLoc)) return;
-        this.createBlockEntity(blockEntityType, targetLoc);
+        if (!this.createBlockEntity(blockEntityType, targetLoc, player)) return;
 
         if (blockEntityType.isRemoveItem()) {
             ItemStack removeItem = blockEntityType.getItemStack().clone();
@@ -73,12 +71,14 @@ public class BlockEntityListener implements Listener {
         player.playSound(player, Sound.BLOCK_STONE_PLACE, 1.0F, 1.0F);
     }
 
-    private void createBlockEntity(BlockEntityType<?, ?> blockEntityType, Location targetLoc) {
-        BlockEntity<?, ?> blockEntity = blockEntityType.getBlockEntity();
+    private boolean createBlockEntity(BlockEntityType<?, ?> blockEntityType, Location targetLoc, Player player) {
+        if (!blockEntityType.canBePlaced(player, targetLoc)) return false;
+        BlockEntity<?, ?> blockEntity = blockEntityType.getBlockEntity(targetLoc);
         blockEntity.summon(targetLoc);
         Interaction interaction = blockEntity.getInteraction();
         BlockEntityTypeRegistry.setType(interaction, blockEntityType);
         blockEntity.store();
+        return true;
     }
 
     @EventHandler
@@ -96,7 +96,7 @@ public class BlockEntityListener implements Listener {
             || !(event.getEntity() instanceof Interaction interaction)) return;
         BlockEntityRegistry blockEntityRegistry = this.plugin.getBlockEntityRegistry();
         BlockEntity<?, ?> blockEntity = blockEntityRegistry.get(interaction);
-        blockEntityRegistry.remove(interaction);
+        blockEntityRegistry.remove(blockEntity);
         blockEntity.remove(player);
     }
 

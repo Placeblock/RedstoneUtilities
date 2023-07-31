@@ -14,8 +14,8 @@ public class ReceiverBlockEntityType extends WirelessBlockEntityType<ReceiverBlo
     }
 
     @Override
-    public ReceiverBlockEntity getBlockEntity(UUID uuid) {
-        return new ReceiverBlockEntity(this, uuid);
+    public ReceiverBlockEntity getBlockEntity(UUID uuid, Location location) {
+        return new ReceiverBlockEntity(this, uuid, location);
     }
 
     @Override

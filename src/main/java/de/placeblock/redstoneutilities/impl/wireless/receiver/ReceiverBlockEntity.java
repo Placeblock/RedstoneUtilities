@@ -32,8 +32,8 @@ public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity
     private String wirelessName = "Unknown";
     private List<SenderBlockEntity> senders = new ArrayList<>();
 
-    public ReceiverBlockEntity(ReceiverBlockEntityType type, UUID uuid) {
-        super(type, uuid);
+    public ReceiverBlockEntity(ReceiverBlockEntityType type, UUID uuid, Location location) {
+        super(type, uuid, location);
     }
 
 

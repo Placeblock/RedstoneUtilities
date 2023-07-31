@@ -1,23 +1,22 @@
-package de.placeblock.redstoneutilities.impl.filter;
+package de.placeblock.redstoneutilities.impl.teleporter;
 
 import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
 
-public class FilterBlockEntityType extends BlockEntityType<FilterBlockEntity, FilterBlockEntityType> {
-    public FilterBlockEntityType(RedstoneUtilities plugin) {
-        super(plugin, "filter", Items.FILTER_ITEM, true, List.of(Material.HOPPER));
+public class TeleporterBlockEntityType extends BlockEntityType<TeleporterBlockEntity, TeleporterBlockEntityType> {
+    public TeleporterBlockEntityType(RedstoneUtilities plugin) {
+        super(plugin, "teleporter", Items.CHUNKLOADER_ITEM, true, List.of());
     }
 
     @Override
-    public FilterBlockEntity getBlockEntity(UUID uuid, Location location) {
-        return new FilterBlockEntity(this, uuid, location);
+    public TeleporterBlockEntity getBlockEntity(UUID uuid, Location location) {
+        return new TeleporterBlockEntity(this, uuid, location);
     }
 
     @Override

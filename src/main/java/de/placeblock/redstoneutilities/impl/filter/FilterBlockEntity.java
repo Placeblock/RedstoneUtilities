@@ -37,8 +37,8 @@ public class FilterBlockEntity extends BlockEntity<FilterBlockEntity, FilterBloc
     private List<UUID> filterEntities = new ArrayList<>();
     private Hopper hopper;
 
-    public FilterBlockEntity(BlockEntityType<FilterBlockEntity, FilterBlockEntityType> type, UUID uuid) {
-        super(type, uuid);
+    public FilterBlockEntity(BlockEntityType<FilterBlockEntity, FilterBlockEntityType> type, UUID uuid, Location location) {
+        super(type, uuid, location);
     }
 
     @Override
@@ -92,7 +92,9 @@ public class FilterBlockEntity extends BlockEntity<FilterBlockEntity, FilterBloc
         List<UUID> filterEntities = EntityStructureUtil.getEntityUUIDs(interaction, FILTER_ENTITY_NAME);
         this.setFilterEntities(filterEntities);
         Block block = interaction.getLocation().getBlock();
-        this.hopper = (Hopper) block.getState();
+        if (block.getState() instanceof Hopper hopper) {
+            this.hopper = hopper;
+        }
 
         PersistentDataContainer pdc = interaction.getPersistentDataContainer();
         String serializedFilter = pdc.get(FILTER_ITEM_META, PersistentDataType.STRING);

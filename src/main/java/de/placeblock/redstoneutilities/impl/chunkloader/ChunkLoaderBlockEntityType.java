@@ -15,8 +15,8 @@ public class ChunkLoaderBlockEntityType extends BlockEntityType<ChunkLoaderBlock
     }
 
     @Override
-    public ChunkLoaderBlockEntity getBlockEntity(UUID uuid) {
-        return new ChunkLoaderBlockEntity(this, uuid);
+    public ChunkLoaderBlockEntity getBlockEntity(UUID uuid, Location location) {
+        return new ChunkLoaderBlockEntity(this, uuid, location);
     }
 
     @Override

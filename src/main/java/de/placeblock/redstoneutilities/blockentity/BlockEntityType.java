@@ -29,11 +29,11 @@ public abstract class BlockEntityType<B extends BlockEntity<B, BT>, BT extends B
         this.plugin.getLogger().info("Registered BlockEntityType " + name);
     }
 
-    public B getBlockEntity() {
-        return this.getBlockEntity(null);
+    public B getBlockEntity(Location targetLoc) {
+        return this.getBlockEntity(null, targetLoc);
     }
 
-    public abstract B getBlockEntity(UUID uuid);
+    public abstract B getBlockEntity(UUID uuid, Location targetLoc);
 
     public abstract boolean canBePlaced(Player player, Location location);
 

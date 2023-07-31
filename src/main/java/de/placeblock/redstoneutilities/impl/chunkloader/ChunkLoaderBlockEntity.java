@@ -35,8 +35,8 @@ public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, 
     Map<Upgrade, Integer> upgrades = new HashMap<>();
 
 
-    public ChunkLoaderBlockEntity(BlockEntityType<ChunkLoaderBlockEntity, ChunkLoaderBlockEntityType> type, UUID uuid) {
-        super(type, uuid);
+    public ChunkLoaderBlockEntity(BlockEntityType<ChunkLoaderBlockEntity, ChunkLoaderBlockEntityType> type, UUID uuid, Location location) {
+        super(type, uuid, location);
     }
 
     @Override

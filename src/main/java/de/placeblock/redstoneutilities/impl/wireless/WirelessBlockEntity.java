@@ -32,8 +32,8 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     private Material wirelessType;
     private List<UUID> typeEntities = new ArrayList<>();
 
-    public WirelessBlockEntity(BlockEntityType<B, BT> type, UUID uuid) {
-        super(type, uuid);
+    public WirelessBlockEntity(BlockEntityType<B, BT> type, UUID uuid, Location location) {
+        super(type, uuid, location);
     }
 
     public void setWirelessType(Material type) {

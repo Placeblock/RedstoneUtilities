@@ -16,8 +16,8 @@ public class SenderBlockEntityType extends WirelessBlockEntityType<SenderBlockEn
 
 
     @Override
-    public SenderBlockEntity getBlockEntity(UUID uuid) {
-        return new SenderBlockEntity(this, uuid);
+    public SenderBlockEntity getBlockEntity(UUID uuid, Location location) {
+        return new SenderBlockEntity(this, uuid, location);
     }
 
     @Override
