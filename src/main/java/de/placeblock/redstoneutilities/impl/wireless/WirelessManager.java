@@ -15,6 +15,9 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 
 public class WirelessManager implements BlockEntityManager {
+    public static final String SENDER_NAME = "wireless_sender";
+    public static final String RECEIVER_NAME = "wireless_receiver";
+    public static final String WIRELESS_NAME = "wireless";
 
     @Getter
     private ConnectorHandler connectorHandler;

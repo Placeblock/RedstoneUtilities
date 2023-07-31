@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.impl.wireless.receiver;
 
+import de.placeblock.redstoneutilities.BlockEntityManagerRegistry;
 import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
@@ -64,7 +65,8 @@ public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity
     }
 
     protected void handleConnectorInteraction(Player player) {
-        WirelessManager wirelessManager = RedstoneUtilities.getInstance().getWirelessManager();
+        BlockEntityManagerRegistry managerRegistry = RedstoneUtilities.getInstance().getManagerRegistry();
+        WirelessManager wirelessManager = managerRegistry.get(WirelessManager.WIRELESS_NAME, WirelessManager.class);
         ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
         if (!connectorHandler.hasPlayer(player)) return;
 
@@ -119,7 +121,8 @@ public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity
     public void remove(Player player, boolean drop) {
         for (SenderBlockEntity sender : this.senders) {
             sender.getReceivers().remove(this);
-            WirelessManager wirelessManager = RedstoneUtilities.getInstance().getWirelessManager();
+            BlockEntityManagerRegistry managerRegistry = RedstoneUtilities.getInstance().getManagerRegistry();
+            WirelessManager wirelessManager = managerRegistry.get(WirelessManager.WIRELESS_NAME, WirelessManager.class);
             ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
             connectorHandler.giveCost(player, sender.getBlockLocation(), this.getBlockLocation());
         }

@@ -54,7 +54,6 @@ public class BlockEntityRegistry {
     }
 
     public void load(Interaction interaction) {
-        this.plugin.getLogger().info("Loading unknown BlockEntity at Location: " + interaction.getLocation());
         BlockEntityType<?, ?> type = this.plugin.getBlockEntityTypeRegistry().getType(interaction);
         if (type == null) {
             this.plugin.getLogger().warning("BlockEntityType is null");

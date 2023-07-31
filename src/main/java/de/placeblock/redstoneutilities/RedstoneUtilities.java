@@ -1,13 +1,14 @@
 package de.placeblock.redstoneutilities;
-import de.placeblock.redstoneutilities.impl.autocrafting.AutoCraftingManager;
 import de.placeblock.redstoneutilities.blockentity.*;
-import de.placeblock.redstoneutilities.impl.chunkloader.ChunkLoaderManager;
 import de.placeblock.redstoneutilities.command.BlockEntityStructureCommand;
 import de.placeblock.redstoneutilities.command.NearbyEntityUUIDCommand;
+import de.placeblock.redstoneutilities.impl.autocrafting.AutoCraftingManager;
+import de.placeblock.redstoneutilities.impl.chunkloader.ChunkLoaderManager;
 import de.placeblock.redstoneutilities.impl.filter.FilterManager;
+import de.placeblock.redstoneutilities.impl.teleporter.TeleporterManager;
+import de.placeblock.redstoneutilities.impl.wireless.WirelessManager;
 import de.placeblock.redstoneutilities.upgrades.Upgrade;
 import de.placeblock.redstoneutilities.upgrades.UpgradeItems;
-import de.placeblock.redstoneutilities.impl.wireless.WirelessManager;
 import lombok.Getter;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 @Getter
 public class RedstoneUtilities extends JavaPlugin {
@@ -34,54 +36,67 @@ public class RedstoneUtilities extends JavaPlugin {
     private BlockEntityRegistry blockEntityRegistry;
     private TextInputHandler textInputHandler;
 
-    private WirelessManager wirelessManager;
-    private AutoCraftingManager autoCraftingManager;
-    private FilterManager filterManager;
-    private ChunkLoaderManager chunkLoaderManager;
+    private BlockEntityManagerRegistry managerRegistry;
 
     @Override
     public void onEnable() {
         RedstoneUtilities.instance = this;
         this.saveDefaultConfig();
 
-        this.blockEntityListener = new BlockEntityListener(this);
+        this.createRegistries();
+        this.createManagers();
+        this.registerListeners();
+        this.startAutoSave();
+        this.registerUpgradeRecipes();
+        this.registerCommands();
+    }
+
+    private void createManagers() {
+        this.checkAndCreateManager(AutoCraftingManager.AUTO_CRAFTING_NAME, AutoCraftingManager::new);
+        this.checkAndCreateManager(ChunkLoaderManager.CHUNK_LOADER_NAME, ChunkLoaderManager::new);
+        this.checkAndCreateManager(FilterManager.FILTER_NAME, FilterManager::new);
+        this.checkAndCreateManager(TeleporterManager.TELEPORTER_NAME, TeleporterManager::new);
+        this.checkAndCreateManager(WirelessManager.WIRELESS_NAME, WirelessManager::new);
+    }
+
+    private void checkAndCreateManager(String name, Supplier<BlockEntityManager> constructor) {
+        if (this.shouldLoadManager(name)) {
+            BlockEntityManager blockEntityManager = constructor.get();
+            this.managerRegistry.register(name, blockEntityManager);
+            blockEntityManager.setup(this);
+            this.getLogger().info("Registered " + name + " Manager");
+        }
+    }
+
+    private void createRegistries() {
         this.blockEntityTypeRegistry = new BlockEntityTypeRegistry();
         this.blockEntityRegistry = new BlockEntityRegistry(this);
         this.getLogger().info("Started BlockEntity(Type) Registry");
 
-        PluginManager pluginManager = this.getServer().getPluginManager();
-        pluginManager.registerEvents(this.blockEntityListener, this);
-        this.textInputHandler = new TextInputHandler();
-        pluginManager.registerEvents(this.textInputHandler, this);
-        this.getLogger().info("Started TextInputHandler");
+        this.managerRegistry = new BlockEntityManagerRegistry();
+        this.getLogger().info("Started Manager Registry");
+    }
 
+    private void registerUpgradeRecipes() {
         for (Upgrade upgrade : Upgrade.values()) {
             UpgradeItems.registerRecipes(upgrade);
         }
         this.getLogger().info("Registered Upgrade Recipes");
+    }
 
-        if (this.shouldLoadBlockEntity("wireless")) {
-            this.wirelessManager = new WirelessManager();
-            this.wirelessManager.setup(this);
-        }
-        if (this.shouldLoadBlockEntity("autocrafting")) {
-            this.autoCraftingManager = new AutoCraftingManager();
-            this.autoCraftingManager.setup(this);
-        }
-        if (this.shouldLoadBlockEntity("filter")) {
-            this.filterManager = new FilterManager();
-            this.filterManager.setup(this);
-        }
-        if (this.shouldLoadBlockEntity("chunkloader")) {
-            this.chunkLoaderManager = new ChunkLoaderManager();
-            this.chunkLoaderManager.setup(this);
-        }
-        this.getLogger().info("Created BlockEntity Managers");
+    private void registerListeners() {
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        this.blockEntityListener = new BlockEntityListener(this);
+        pluginManager.registerEvents(this.blockEntityListener, this);
+        this.textInputHandler = new TextInputHandler();
+        pluginManager.registerEvents(this.textInputHandler, this);
+        this.getLogger().info("Registered Listeners");
+    }
 
-        this.startAutoSave();
-
+    private void registerCommands() {
         Objects.requireNonNull(this.getCommand("bes")).setExecutor(new BlockEntityStructureCommand());
         Objects.requireNonNull(this.getCommand("euuid")).setExecutor(new NearbyEntityUUIDCommand());
+        this.getLogger().info("Registered Commands");
     }
 
     private void startAutoSave() {
@@ -121,22 +136,14 @@ public class RedstoneUtilities extends JavaPlugin {
         HandlerList.unregisterAll(this.blockEntityListener);
         this.getLogger().info("Stopped TextInputHandler");
 
-        if (this.wirelessManager != null) {
-            this.wirelessManager.disable();
+        for (BlockEntityManager manager : this.managerRegistry.getManagers().values()) {
+            manager.disable();
         }
-        if (this.autoCraftingManager != null) {
-            this.autoCraftingManager.disable();
-        }
-        if (this.filterManager != null) {
-            this.filterManager.disable();
-        }
-        if (this.chunkLoaderManager != null) {
-            this.chunkLoaderManager.disable();
-        }
+        this.managerRegistry.removeAll();
         this.getLogger().info("Disabled BlockEntity Manager");
     }
 
-    private boolean shouldLoadBlockEntity(String name) {
+    private boolean shouldLoadManager(String name) {
         FileConfiguration config = this.getConfig();
         ConfigurationSection blockentities = config.getConfigurationSection("blockentities");
         if (blockentities == null || !blockentities.contains(name)) return false;

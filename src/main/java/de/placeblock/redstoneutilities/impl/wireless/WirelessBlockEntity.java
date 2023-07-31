@@ -29,6 +29,8 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     public static final Vector TYPE_ENTITY_VEC = new Vector(0.26, 0, 0);
     public static final String WIRELESS_TYPE_NAME = "WIRELESS_TYPE";
 
+
+
     private Material wirelessType;
     private List<UUID> typeEntities = new ArrayList<>();
 

@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.impl.autocrafting;
 
+import de.placeblock.redstoneutilities.BlockEntityManagerRegistry;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.gui.GUI;
@@ -35,8 +36,9 @@ public class AutoCrafterGUI extends GUI {
     protected void onClick(InventoryClickEvent event) {
         event.setCancelled(true);
         if (event.getSlot() == 1) {
-            AutoCraftingManager autoCrafting = RedstoneUtilities.getInstance().getAutoCraftingManager();
-            RecipeChangeManager recipeChangeManager = autoCrafting.getRecipeChangeManager();
+            BlockEntityManagerRegistry managerRegistry = RedstoneUtilities.getInstance().getManagerRegistry();
+            AutoCraftingManager autoCraftingManager = managerRegistry.get(AutoCraftingManager.AUTO_CRAFTING_NAME, AutoCraftingManager.class);
+            RecipeChangeManager recipeChangeManager = autoCraftingManager.getRecipeChangeManager();
             recipeChangeManager.register(this.player, this.blockEntity);
             this.player.openWorkbench(null, true);
         } else if (event.getSlot() == 3) {

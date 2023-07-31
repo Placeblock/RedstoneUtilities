@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.List;
 
 public class ChunkLoaderManager implements BlockEntityManager {
+    public static final String CHUNK_LOADER_NAME = "chunkloader";
     private ChunkLoaderListener chunkLoaderListener;
     private BukkitTask chunkTicker;
 

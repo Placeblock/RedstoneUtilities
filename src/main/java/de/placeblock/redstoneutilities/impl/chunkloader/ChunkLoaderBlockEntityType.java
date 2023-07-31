@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class ChunkLoaderBlockEntityType extends BlockEntityType<ChunkLoaderBlockEntity, ChunkLoaderBlockEntityType> {
     public ChunkLoaderBlockEntityType(RedstoneUtilities plugin) {
-        super(plugin, "chunkloader", Items.CHUNKLOADER_ITEM, true, List.of());
+        super(plugin, ChunkLoaderManager.CHUNK_LOADER_NAME, Items.CHUNKLOADER_ITEM, true, List.of());
     }
 
     @Override

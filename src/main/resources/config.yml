@@ -1,9 +1,10 @@
 # Enables / Disables specific features
 blockentities:
   wireless: true
-  autocrafting: true
+  auto_crafter: true
   filter: true
   chunkloader: true
+  teleporter: true
 
 # BlockEntities get autosaved every x ticks. -1 to disable.
 # Minimum is 21 (every second)

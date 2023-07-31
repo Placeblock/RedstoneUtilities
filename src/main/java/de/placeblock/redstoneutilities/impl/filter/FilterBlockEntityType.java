@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class FilterBlockEntityType extends BlockEntityType<FilterBlockEntity, FilterBlockEntityType> {
     public FilterBlockEntityType(RedstoneUtilities plugin) {
-        super(plugin, "filter", Items.FILTER_ITEM, true, List.of(Material.HOPPER));
+        super(plugin, FilterManager.FILTER_NAME, Items.FILTER_ITEM, true, List.of(Material.HOPPER));
     }
 
     @Override

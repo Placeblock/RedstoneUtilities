@@ -9,6 +9,7 @@ import org.bukkit.plugin.PluginManager;
 
 @Getter
 public class AutoCraftingManager implements BlockEntityManager {
+    public static final String AUTO_CRAFTING_NAME = "auto_crafter";
 
     private RecipeChangeManager recipeChangeManager;
     private ItemListener itemListener;

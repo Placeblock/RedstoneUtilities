@@ -6,6 +6,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 
 public class FilterManager implements BlockEntityManager {
+    public static final String FILTER_NAME = "filter";
     private FilterListener filterListener;
 
     public void setup(RedstoneUtilities plugin) {

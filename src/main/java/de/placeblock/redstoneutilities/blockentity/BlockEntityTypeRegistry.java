@@ -38,7 +38,8 @@ public class BlockEntityTypeRegistry {
     public BlockEntityType<?, ?> getType(Interaction interaction) {
         PersistentDataContainer pdc = interaction.getPersistentDataContainer();
         String typeName = pdc.get(TYPE_KEY, PersistentDataType.STRING);
-        return this.getBlockEntityType(typeName);
+        if (typeName == null) return null;
+        return this.getBlockEntityType(typeName.toLowerCase());
     }
 
     public static void setType(Interaction interaction, BlockEntityType<?, ?> blockEntityType) {

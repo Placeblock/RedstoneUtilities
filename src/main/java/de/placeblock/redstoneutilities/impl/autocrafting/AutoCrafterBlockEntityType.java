@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class AutoCrafterBlockEntityType extends BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> {
     public AutoCrafterBlockEntityType(RedstoneUtilities plugin) {
-        super(plugin, "AUTO_CRAFTER", Items.AUTOCRAFTER_ITEM, true, List.of(Material.DROPPER));
+        super(plugin, AutoCraftingManager.AUTO_CRAFTING_NAME, Items.AUTOCRAFTER_ITEM, true, List.of(Material.DROPPER));
     }
 
     @Override
