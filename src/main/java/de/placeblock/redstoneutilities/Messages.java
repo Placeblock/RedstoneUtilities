@@ -1,8 +1,8 @@
 package de.placeblock.redstoneutilities;
 
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
-import de.placeblock.redstoneutilities.wireless.receiver.ReceiverBlockEntity;
-import de.placeblock.redstoneutilities.wireless.sender.SenderBlockEntity;
+import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntity;
+import de.placeblock.redstoneutilities.impl.wireless.sender.SenderBlockEntity;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Location;

@@ -1,13 +1,13 @@
 package de.placeblock.redstoneutilities;
-import de.placeblock.redstoneutilities.autocrafting.AutoCraftingManager;
+import de.placeblock.redstoneutilities.impl.autocrafting.AutoCraftingManager;
 import de.placeblock.redstoneutilities.blockentity.*;
-import de.placeblock.redstoneutilities.chunkloader.ChunkLoaderManager;
+import de.placeblock.redstoneutilities.impl.chunkloader.ChunkLoaderManager;
 import de.placeblock.redstoneutilities.command.BlockEntityStructureCommand;
 import de.placeblock.redstoneutilities.command.NearbyEntityUUIDCommand;
-import de.placeblock.redstoneutilities.filter.FilterManager;
+import de.placeblock.redstoneutilities.impl.filter.FilterManager;
 import de.placeblock.redstoneutilities.upgrades.Upgrade;
 import de.placeblock.redstoneutilities.upgrades.UpgradeItems;
-import de.placeblock.redstoneutilities.wireless.WirelessManager;
+import de.placeblock.redstoneutilities.impl.wireless.WirelessManager;
 import lombok.Getter;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
