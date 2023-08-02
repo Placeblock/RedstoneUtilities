@@ -19,6 +19,7 @@ public class Items {
     public static final Material INFOMETER_MATERIAL = Material.RECOVERY_COMPASS;
     public static final Material AUTOCRAFTER_MATERIAL = Material.CRAFTING_TABLE;
     public static final Material CHUNKLOADER_MATERIAL = Material.RESPAWN_ANCHOR;
+    public static final Material TELEPORTER_MATERIAL = Material.END_PORTAL_FRAME;
 
     public static final ItemStack RECEIVER_ITEM;
     public static final ItemStack SENDER_ITEM;
@@ -27,6 +28,7 @@ public class Items {
     public static final ItemStack AUTOCRAFTER_ITEM;
     public static final ItemStack FILTER_ITEM;
     public static final ItemStack CHUNKLOADER_ITEM;
+    public static final ItemStack TELEPORTER_ITEM;
 
     public static final @NotNull TextComponent REDSTONE_INFOMETER_DISPLAYNAME = Component.text("Redstone Infometer")
             .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
@@ -118,6 +120,16 @@ public class Items {
                 .color(RedstoneUtilities.PRIMARY_COLOR));
         chunkloaderItem.setItemMeta(chunkloaderMeta);
         CHUNKLOADER_ITEM = chunkloaderItem;
+
+        ItemStack teleporterItem = new ItemStack(TELEPORTER_MATERIAL);
+        ItemMeta teleporterMeta = teleporterItem.getItemMeta();
+        teleporterMeta.addEnchant(Enchantment.PROTECTION_FALL, 1, false);
+        teleporterMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
+        teleporterMeta.displayName(Component.text("Teleporter")
+                .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                .color(RedstoneUtilities.PRIMARY_COLOR));
+        teleporterItem.setItemMeta(teleporterMeta);
+        TELEPORTER_ITEM = teleporterItem;
     }
 
     public static boolean isInfometer(ItemStack item) {

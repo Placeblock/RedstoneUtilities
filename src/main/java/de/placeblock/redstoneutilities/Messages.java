@@ -10,27 +10,31 @@ import org.bukkit.Location;
 import java.util.List;
 
 public class Messages {
-
-    public static final Component PLACE_RECEIVER = Component.text("Mit einem ").color(RedstoneUtilities.INFERIOR_COLOR)
-            .append(Component.text("Redstone Verbinder").color(RedstoneUtilities.PRIMARY_COLOR))
-            .append(Component.text(" kannst du ").color(RedstoneUtilities.INFERIOR_COLOR))
-            .append(Component.text("Sender und Empfänger verbinden").color(RedstoneUtilities.PRIMARY_COLOR));
-
     public static final Component CONNECT_CANCEL = Component.text("[Shift] + [Rechtsklick Luft]").color(RedstoneUtilities.PRIMARY_COLOR)
             .append(Component.text(" = ").color(RedstoneUtilities.INFERIOR_COLOR))
             .append(Component.text("Abbrechen").color(RedstoneUtilities.PRIMARY_COLOR));
 
-    public static final Component CONNECTED = Component.text("Du hast den ").color(RedstoneUtilities.INFERIOR_COLOR)
-            .append(Component.text("Sender mit dem Empfänger verbunden ").color(RedstoneUtilities.PRIMARY_COLOR));
+    public static final Component CONNECT_CANCELLED = Component.text("Du hast das Verbinden ").color(RedstoneUtilities.INFERIOR_COLOR)
+            .append(Component.text("abgebrochen").color(RedstoneUtilities.PRIMARY_COLOR));
 
-    public static final Component DISCONNECTED = Component.text("Du hast den ").color(RedstoneUtilities.INFERIOR_COLOR)
-            .append(Component.text("Sender von dem Empfänger getrennt ").color(RedstoneUtilities.PRIMARY_COLOR));
+    public static final Component CANNOT_CONNECT_SELF = Component.text("Du kannst diesen Block ").color(RedstoneUtilities.INFERIOR_COLOR)
+            .append(Component.text("nicht mit sich selbst verbinden").color(RedstoneUtilities.PRIMARY_COLOR));
 
-    public static final Component NOT_ENOUGH_REDSTONE = Component.text("Du hast ").color(RedstoneUtilities.INFERIOR_COLOR)
-            .append(Component.text("nicht genug Redstone! ").color(RedstoneUtilities.PRIMARY_COLOR));
+    public static final Component TELEPORTER_TOO_FAR_AWAY = Component.text("Die Teleporter sind ").color(RedstoneUtilities.INFERIOR_COLOR)
+            .append(Component.text("zu weit auseinander. ").color(RedstoneUtilities.PRIMARY_COLOR))
+            .append(Component.text("Effizienz Upgrades können die Distanz erweitern!").color(RedstoneUtilities.INFERIOR_COLOR));
 
-    public static final Component REDSTONE_RECEIVED = Component.text("Dir wurde das ").color(RedstoneUtilities.INFERIOR_COLOR)
-            .append(Component.text("bezahlte Redstone zurückerstattet! ").color(RedstoneUtilities.PRIMARY_COLOR));
+    public static final Component CONNECTED = Component.text("Du hast die ").color(RedstoneUtilities.INFERIOR_COLOR)
+            .append(Component.text("Verbindung aufgebaut").color(RedstoneUtilities.PRIMARY_COLOR));
+
+    public static final Component DISCONNECTED = Component.text("Du hast die ").color(RedstoneUtilities.INFERIOR_COLOR)
+            .append(Component.text("Verbindung getrennt ").color(RedstoneUtilities.PRIMARY_COLOR));
+
+    public static final Component NOT_ENOUGH_RESSOURCES = Component.text("Du hast ").color(RedstoneUtilities.INFERIOR_COLOR)
+            .append(Component.text("nicht genug Ressourcen! ").color(RedstoneUtilities.PRIMARY_COLOR));
+
+    public static final Component RESSOURCES_RECEIVED = Component.text("Dir wurden die ").color(RedstoneUtilities.INFERIOR_COLOR)
+            .append(Component.text("bezahlten Kosten zurückerstattet! ").color(RedstoneUtilities.PRIMARY_COLOR));
 
     public static final Component REMOVED_FROM_INFOMETER = Component.text("Empfänger ").color(RedstoneUtilities.INFERIOR_COLOR)
             .append(Component.text("aus Infometer entfernt! ").color(RedstoneUtilities.PRIMARY_COLOR));

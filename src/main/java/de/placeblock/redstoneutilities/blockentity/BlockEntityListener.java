@@ -1,6 +1,8 @@
 package de.placeblock.redstoneutilities.blockentity;
 
+import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.connector.Connectable;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -87,6 +89,13 @@ public class BlockEntityListener implements Listener {
         if (!(entity instanceof Interaction interaction)) return;
         BlockEntity<?, ?> blockEntity = this.plugin.getBlockEntityRegistry().get(interaction);
         if (blockEntity == null) return;
+        Player player = event.getPlayer();
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (item.isSimilar(Items.CONNECTOR_ITEM)
+            &&blockEntity instanceof Connectable<?,?> connectable) {
+            connectable.handleInteraction(player);
+            return;
+        }
         blockEntity.onInteract(event);
     }
 

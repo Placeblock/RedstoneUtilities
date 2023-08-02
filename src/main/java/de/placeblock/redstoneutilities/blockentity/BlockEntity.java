@@ -1,5 +1,8 @@
 package de.placeblock.redstoneutilities.blockentity;
 
+import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.connector.Connectable;
+import de.placeblock.redstoneutilities.connector.ConnectorHandler;
 import de.placeblock.redstoneutilities.pdc.LocationPDCUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,9 +60,14 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
             this.drop();
         }
         this.getInteraction().remove();
+        if (this instanceof Connectable<?,?> connectable) {
+            ConnectorHandler connectorHandler = RedstoneUtilities.getInstance().getConnectorHandler();
+            connectorHandler.removeConnectable(connectable);
+        }
     }
 
     public Interaction getInteraction() {
+        this.getLocation().getWorld().getChunkAt(this.getLocation());
         return (Interaction) Bukkit.getEntity(this.uuid);
     }
 
@@ -90,7 +98,7 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         LocationPDCUtil.setLocation(this.getInteraction(), BlockEntityRegistry.BLOCK_ENTITY_LOCATION_KEY, this.location);
     }
 
-    public abstract void disable();
+    public void disable() {}
 
     @Override
     public String toString() {

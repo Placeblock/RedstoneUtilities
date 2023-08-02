@@ -1,6 +1,7 @@
 package de.placeblock.redstoneutilities.impl.wireless.infometer;
 
 import de.placeblock.redstoneutilities.RedstoneUtilities;
+import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntityType;
 import de.placeblock.redstoneutilities.pdc.PDCUUIDListUtil;
 import de.placeblock.redstoneutilities.impl.wireless.WirelessPDCUtil;
 import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntity;
@@ -28,7 +29,7 @@ public class InfometerPDCUtil {
 
     public static List<ReceiverBlockEntity> getReceivers(ItemStack item) {
         List<UUID> receiverUUIDs = PDCUUIDListUtil.getUUIDs(item.getItemMeta(), RECEIVERS_KEY);
-        return WirelessPDCUtil.getBlockEntities(receiverUUIDs, ReceiverBlockEntity.class);
+        return WirelessPDCUtil.getBlockEntities(receiverUUIDs, ReceiverBlockEntity.class, ReceiverBlockEntityType.class);
     }
 
     public static List<UUID> getRemovedReceivers(ItemStack item) {

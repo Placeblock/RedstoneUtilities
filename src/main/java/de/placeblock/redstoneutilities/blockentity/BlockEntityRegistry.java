@@ -26,7 +26,9 @@ public class BlockEntityRegistry {
         return this.blockEntities.containsKey(interaction.getUniqueId());
     }
 
-    public <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> B get(Interaction interaction, Class<B> bclazz) {
+    public <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> B get(Interaction interaction, Class<B> bclazz, Class<BT> btclazz) {
+        BlockEntityType<?, ?> type = this.plugin.getBlockEntityTypeRegistry().getType(interaction);
+        if (type == null || type.getClass() != btclazz) return null;
         BlockEntity<?, ?> blockEntity = this.get(interaction);
         if (blockEntity == null) return null;
         if (bclazz.isAssignableFrom(blockEntity.getClass())) {

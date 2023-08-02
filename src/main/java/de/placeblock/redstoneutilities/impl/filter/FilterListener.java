@@ -42,6 +42,6 @@ public class FilterListener implements Listener {
         Interaction interaction = Util.getInteraction(hopper.getLocation().toCenterLocation());
         if (interaction == null) return null;
         BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
-        return blockEntityRegistry.get(interaction, FilterBlockEntity.class);
+        return blockEntityRegistry.get(interaction, FilterBlockEntity.class, FilterBlockEntityType.class);
     }
 }

@@ -1,8 +1,7 @@
-package de.placeblock.redstoneutilities.impl.wireless;
+package de.placeblock.redstoneutilities.connector;
 
 import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
-import de.placeblock.redstoneutilities.impl.wireless.sender.SenderBlockEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
@@ -26,27 +25,36 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ConnectorHandler implements Listener {
     private BukkitTask actionBarTask;
 
-    private final Map<Player, ConnectorInfo> players = new HashMap<>();
+    private Map<Player, ConnectorInfo> players = new HashMap<>();
 
     public void start(Plugin plugin) {
         this.actionBarTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             for (Map.Entry<Player, ConnectorInfo> entry : this.players.entrySet()) {
                 Player player = entry.getKey();
-                if (entry.getValue().isDestroying()) continue;
-                int cost = this.getCost(player);
-                TextComponent message = Component.text("Kosten: ").color(RedstoneUtilities.INFERIOR_COLOR)
-                        .append(Component.text(cost + " Redstone").color(RedstoneUtilities.PRIMARY_COLOR));
+                ConnectorInfo connectorInfo = entry.getValue();
+                if (connectorInfo.isDestroying()) continue;
+                TextComponent message;
+                if (connectorInfo.costType == null) {
+                    message = Component.text("Kosten: ").color(RedstoneUtilities.INFERIOR_COLOR)
+                            .append(Component.text("Kostenlos").color(RedstoneUtilities.PRIMARY_COLOR));
+                } else {
+                    int cost = this.getCost(player);
+                    message = Component.text("Kosten: ").color(RedstoneUtilities.INFERIOR_COLOR)
+                        .append(Component.text(cost + " " + connectorInfo.costType).color(RedstoneUtilities.PRIMARY_COLOR));
+                }
                 player.sendActionBar(message);
             }
         }, 0, 10);
     }
 
     public int getCost(Player player) {
-        Location location = this.players.get(player).getSenderBlockEntity().getCenterLocation();
+        Location location = this.players.get(player).getConnectable().getCenterLocation();
         Entity targetEntity = player.getTargetEntity(100, false);
         Location targetLoc;
         if (targetEntity == null) {
@@ -68,20 +76,19 @@ public class ConnectorHandler implements Listener {
         return (int) location.distance(target);
     }
 
-    public boolean removeCost(Player player, int cost) {
-        if (player.getInventory().contains(Material.REDSTONE, cost)) {
-            player.getInventory().removeItem(new ItemStack(Material.REDSTONE, cost));
+    public boolean removeCost(Player player, int cost, Material costType) {
+        if (player.getInventory().contains(costType, cost)) {
+            player.getInventory().removeItem(new ItemStack(costType, cost));
             return true;
         } else {
-            player.sendMessage(Messages.NOT_ENOUGH_REDSTONE);
+            player.sendMessage(Messages.NOT_ENOUGH_RESSOURCES);
             return false;
         }
     }
 
-    public void giveCost(Player player, Location sender, Location receiver) {
-        int cost = this.getCost(sender, receiver);
-        player.getInventory().addItem(new ItemStack(Material.REDSTONE, cost));
-        player.sendMessage(Messages.REDSTONE_RECEIVED);
+    public void giveCost(Player player, int cost, Material costItem) {
+        player.getInventory().addItem(new ItemStack(costItem, cost));
+        player.sendMessage(Messages.RESSOURCES_RECEIVED);
     }
 
     public void disable() {
@@ -96,13 +103,16 @@ public class ConnectorHandler implements Listener {
 
     @EventHandler
     public void on(PlayerInteractEvent event) {
-        if (event.getPlayer().isSneaking() && event.getAction() == Action.RIGHT_CLICK_AIR) {
-            this.players.remove(event.getPlayer());
+        Player player = event.getPlayer();
+        if (player.isSneaking() && event.getAction() == Action.RIGHT_CLICK_AIR) {
+            if (this.players.remove(player) != null) {
+                player.sendMessage(Messages.CONNECT_CANCELLED);
+            }
         }
     }
 
-    public void addPlayer(Player player, SenderBlockEntity sender, boolean destorying) {
-        this.players.put(player, new ConnectorInfo(sender, destorying));
+    public void addPlayer(Player player, Connectable<?, ?> connectable, Material costType, boolean destroying) {
+        this.players.put(player, new ConnectorInfo(connectable, costType, destroying));
     }
 
     public boolean hasPlayer(Player player) {
@@ -117,11 +127,22 @@ public class ConnectorHandler implements Listener {
         this.players.remove(player);
     }
 
+    public void removeConnectable(Connectable<?, ?> connectable) {
+        this.players = filterByValue(this.players, v -> !v.connectable.equals(connectable));
+    }
+
+    static <K, V> Map<K, V> filterByValue(Map<K, V> map, Predicate<V> predicate) {
+        return map.entrySet()
+                .stream()
+                .filter(entry -> predicate.test(entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
     @Getter
     @RequiredArgsConstructor
     public static class ConnectorInfo {
-        private final SenderBlockEntity senderBlockEntity;
+        private final Connectable<?, ?> connectable;
+        private final Material costType;
         private final boolean destroying;
     }
 }

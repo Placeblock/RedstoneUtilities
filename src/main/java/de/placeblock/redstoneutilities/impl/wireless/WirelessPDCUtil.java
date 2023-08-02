@@ -3,6 +3,8 @@ package de.placeblock.redstoneutilities.impl.wireless;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityRegistry;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityType;
+import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntityType;
+import de.placeblock.redstoneutilities.impl.wireless.sender.SenderBlockEntityType;
 import de.placeblock.redstoneutilities.pdc.PDCUUIDListUtil;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntity;
@@ -28,20 +30,20 @@ public class WirelessPDCUtil {
 
     public static List<ReceiverBlockEntity> getReceivers(Interaction interaction) {
         List<UUID> uuids = PDCUUIDListUtil.getUUIDs(interaction, RECEIVERS_KEY);
-        return getBlockEntities(uuids, ReceiverBlockEntity.class);
+        return getBlockEntities(uuids, ReceiverBlockEntity.class, ReceiverBlockEntityType.class);
     }
     public static List<SenderBlockEntity> getSenders(Interaction interaction) {
         List<UUID> uuids = PDCUUIDListUtil.getUUIDs(interaction, SENDERS_KEY);
-        return getBlockEntities(uuids, SenderBlockEntity.class);
+        return getBlockEntities(uuids, SenderBlockEntity.class, SenderBlockEntityType.class);
     }
 
-    public static <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> List<B> getBlockEntities(List<UUID> uuids, Class<B> blockEntityClass) {
+    public static <B extends BlockEntity<B, BT>, BT extends BlockEntityType<B, BT>> List<B> getBlockEntities(List<UUID> uuids, Class<B> blockEntityClass, Class<BT> btClass) {
         List<B> blockEntities = new ArrayList<>();
         BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
         for (UUID uuid : uuids) {
             Entity entity = Bukkit.getEntity(uuid);
             if (!(entity instanceof Interaction interaction)) continue;
-            B rbe = blockEntityRegistry.get(interaction, blockEntityClass);
+            B rbe = blockEntityRegistry.get(interaction, blockEntityClass, btClass);
             if (rbe == null) continue;
             blockEntities.add(rbe);
         }
@@ -60,22 +62,6 @@ public class WirelessPDCUtil {
             nonBlockEntities.add(uuid);
         }
         return nonBlockEntities;
-    }
-
-    public static void addReceiver(Interaction interaction, UUID receiver) {
-        PDCUUIDListUtil.addUUID(interaction, receiver, RECEIVERS_KEY);
-    }
-
-    public static void addSender(Interaction interaction, UUID sender) {
-        PDCUUIDListUtil.addUUID(interaction, sender, SENDERS_KEY);
-    }
-
-    public static void removeReceiver(Interaction interaction, UUID receiver) {
-        PDCUUIDListUtil.removeUUID(interaction, receiver, RECEIVERS_KEY);
-    }
-
-    public static void removeSender(Interaction interaction, UUID sender) {
-        PDCUUIDListUtil.removeUUID(interaction, sender, SENDERS_KEY);
     }
 
     public static void setSenders(Interaction interaction, List<UUID> senders) {

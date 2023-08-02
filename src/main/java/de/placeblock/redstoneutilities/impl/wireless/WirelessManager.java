@@ -5,12 +5,10 @@ import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.impl.wireless.listener.InfometerListener;
 import de.placeblock.redstoneutilities.impl.wireless.listener.RedstoneListener;
 import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntityType;
-import de.placeblock.redstoneutilities.impl.wireless.recipes.ConnectorRecipe;
 import de.placeblock.redstoneutilities.impl.wireless.recipes.InfometerRecipe;
 import de.placeblock.redstoneutilities.impl.wireless.recipes.ReceiverRecipe;
 import de.placeblock.redstoneutilities.impl.wireless.recipes.SenderRecipe;
 import de.placeblock.redstoneutilities.impl.wireless.sender.SenderBlockEntityType;
-import lombok.Getter;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.PluginManager;
 
@@ -19,16 +17,11 @@ public class WirelessManager implements BlockEntityManager {
     public static final String RECEIVER_NAME = "wireless_receiver";
     public static final String WIRELESS_NAME = "wireless";
 
-    @Getter
-    private ConnectorHandler connectorHandler;
     private InfometerListener infometerListener;
     private RedstoneListener redstoneListener;
 
     public void setup(RedstoneUtilities plugin) {
-        this.connectorHandler = new ConnectorHandler();
-        this.connectorHandler.start(plugin);
         PluginManager pluginManager = plugin.getServer().getPluginManager();
-        pluginManager.registerEvents(this.connectorHandler, plugin);
 
         this.infometerListener = new InfometerListener();
         pluginManager.registerEvents(this.infometerListener, plugin);
@@ -37,7 +30,6 @@ public class WirelessManager implements BlockEntityManager {
 
         new ReceiverRecipe().register();
         new SenderRecipe().register();
-        new ConnectorRecipe().register();
         new InfometerRecipe().register();
 
         plugin.getBlockEntityTypeRegistry().register(new ReceiverBlockEntityType(plugin));
@@ -46,7 +38,6 @@ public class WirelessManager implements BlockEntityManager {
 
     @Override
     public void disable() {
-        HandlerList.unregisterAll(this.connectorHandler);
         HandlerList.unregisterAll(this.infometerListener);
         HandlerList.unregisterAll(this.redstoneListener);
     }

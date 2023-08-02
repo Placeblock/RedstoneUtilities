@@ -54,6 +54,12 @@ public class EntityStructureUtil {
         return uuids;
     }
 
+    public static UUID getEntityUUID(Interaction blockEntity, String type) {
+        List<Entity> entities = getEntities(blockEntity, type);
+        if (entities == null || entities.isEmpty()) return null;
+        return entities.get(0).getUniqueId();
+    }
+
     public static void setEntities(Interaction blockEntity, List<UUID> uuids) {
         PersistentDataContainer[] pdcs = new PersistentDataContainer[uuids.size()];
         for (int i = 0; i < uuids.size(); i++) {

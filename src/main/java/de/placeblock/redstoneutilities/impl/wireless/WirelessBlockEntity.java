@@ -55,6 +55,7 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
 
     private void removeTypeEntities() {
         Util.removeEntities(this.typeEntities);
+        this.entityStructure.removeAll(this.typeEntities);
         this.typeEntities.clear();
     }
 
@@ -68,9 +69,7 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     public void onInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInMainHand();
-        if (item.isSimilar(Items.CONNECTOR_ITEM)) {
-            this.handleConnectorInteraction(player);
-        } else if (Items.isInfometer(item)) {
+        if (Items.isInfometer(item)) {
             this.handleInfometerInteraction(player);
         } else {
             this.setWirelessType(item.getType());
@@ -78,8 +77,6 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     }
 
     protected abstract void handleInfometerInteraction(Player player);
-
-    protected abstract void handleConnectorInteraction(Player player);
 
     @Override
     public void summon(Location location) {
@@ -105,10 +102,5 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
     public void store() {
         super.store();
         WirelessPDCUtil.setType(this.getInteraction(), this.wirelessType);
-    }
-
-    @Override
-    public void disable() {
-        
     }
 }

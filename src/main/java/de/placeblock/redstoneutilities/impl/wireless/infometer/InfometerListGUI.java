@@ -4,6 +4,7 @@ import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityRegistry;
 import de.placeblock.redstoneutilities.gui.GUI;
+import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntityType;
 import de.placeblock.redstoneutilities.pdc.PDCUUIDListUtil;
 import de.placeblock.redstoneutilities.impl.wireless.receiver.ReceiverBlockEntity;
 import net.kyori.adventure.text.Component;
@@ -172,7 +173,7 @@ public class InfometerListGUI extends GUI {
         Entity entity = Bukkit.getEntity(uuid);
         if (!(entity instanceof Interaction interaction)) return;
         BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
-        ReceiverBlockEntity receiver = blockEntityRegistry.get(interaction, ReceiverBlockEntity.class);
+        ReceiverBlockEntity receiver = blockEntityRegistry.get(interaction, ReceiverBlockEntity.class, ReceiverBlockEntityType.class);
         InfometerGUI infometerGUI = new InfometerGUI(this.player, receiver);
         infometerGUI.setup();
         infometerGUI.register();

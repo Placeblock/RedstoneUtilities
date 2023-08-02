@@ -14,6 +14,10 @@ public class TeleporterManager implements BlockEntityManager {
         this.teleporterListener = new TeleporterListener();
         PluginManager pluginManager = plugin.getServer().getPluginManager();
         pluginManager.registerEvents(this.teleporterListener, plugin);
+
+        new TeleporterRecipe().register();
+
+        plugin.getBlockEntityTypeRegistry().register(new TeleporterBlockEntityType(plugin));
     }
 
     @Override

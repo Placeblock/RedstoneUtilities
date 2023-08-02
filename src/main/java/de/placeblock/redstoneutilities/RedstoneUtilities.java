@@ -2,6 +2,8 @@ package de.placeblock.redstoneutilities;
 import de.placeblock.redstoneutilities.blockentity.*;
 import de.placeblock.redstoneutilities.command.BlockEntityStructureCommand;
 import de.placeblock.redstoneutilities.command.NearbyEntityUUIDCommand;
+import de.placeblock.redstoneutilities.connector.ConnectorHandler;
+import de.placeblock.redstoneutilities.connector.ConnectorRecipe;
 import de.placeblock.redstoneutilities.impl.autocrafting.AutoCraftingManager;
 import de.placeblock.redstoneutilities.impl.chunkloader.ChunkLoaderManager;
 import de.placeblock.redstoneutilities.impl.filter.FilterManager;
@@ -34,6 +36,7 @@ public class RedstoneUtilities extends JavaPlugin {
 
     private BlockEntityTypeRegistry blockEntityTypeRegistry;
     private BlockEntityRegistry blockEntityRegistry;
+    private ConnectorHandler connectorHandler;
     private TextInputHandler textInputHandler;
 
     private BlockEntityManagerRegistry managerRegistry;
@@ -47,7 +50,7 @@ public class RedstoneUtilities extends JavaPlugin {
         this.createManagers();
         this.registerListeners();
         this.startAutoSave();
-        this.registerUpgradeRecipes();
+        this.registerRecipes();
         this.registerCommands();
     }
 
@@ -77,11 +80,13 @@ public class RedstoneUtilities extends JavaPlugin {
         this.getLogger().info("Started Manager Registry");
     }
 
-    private void registerUpgradeRecipes() {
+    private void registerRecipes() {
+        new ConnectorRecipe().register();
+
         for (Upgrade upgrade : Upgrade.values()) {
             UpgradeItems.registerRecipes(upgrade);
         }
-        this.getLogger().info("Registered Upgrade Recipes");
+        this.getLogger().info("Registered Recipes");
     }
 
     private void registerListeners() {
@@ -90,6 +95,9 @@ public class RedstoneUtilities extends JavaPlugin {
         pluginManager.registerEvents(this.blockEntityListener, this);
         this.textInputHandler = new TextInputHandler();
         pluginManager.registerEvents(this.textInputHandler, this);
+        this.connectorHandler = new ConnectorHandler();
+        this.connectorHandler.start(this);
+        pluginManager.registerEvents(this.connectorHandler, this);
         this.getLogger().info("Registered Listeners");
     }
 

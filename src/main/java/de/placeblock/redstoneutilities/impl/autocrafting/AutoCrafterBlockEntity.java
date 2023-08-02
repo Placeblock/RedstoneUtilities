@@ -37,7 +37,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     private List<UUID> recipeEntities = new ArrayList<>();
     private Location dropperLoc;
     private BukkitTask craftScheduler;
-    Map<Upgrade, Integer> upgrades = new HashMap<>();
+    private Map<Upgrade, Integer> upgrades = new HashMap<>();
 
     public AutoCrafterBlockEntity(BlockEntityType<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> type, UUID uuid, Location location) {
         super(type, uuid, location);
@@ -356,7 +356,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
     @Override
     public String toString() {
         return "AutoCrafterBlockEntity{" +
-                "recipe=" + recipe.getResult() +
+                "recipe=" + (recipe != null ? recipe.getResult() : "") +
                 ", type=" + type +
                 ", uuid=" + uuid +
                 ", entityStructure=" + entityStructure +

@@ -20,7 +20,7 @@ public class ChunkLoaderListener implements Listener {
         BlockEntityRegistry blockEntityRegistry = this.plugin.getBlockEntityRegistry();
         for (Entity entity : loadedChunk.getEntities()) {
             if (!(entity instanceof Interaction interaction)) continue;
-            ChunkLoaderBlockEntity blockEntity = blockEntityRegistry.get(interaction, ChunkLoaderBlockEntity.class);
+            ChunkLoaderBlockEntity blockEntity = blockEntityRegistry.get(interaction, ChunkLoaderBlockEntity.class, ChunkLoaderBlockEntityType.class);
             if (blockEntity == null) continue;
 
             blockEntity.setForceLoad();

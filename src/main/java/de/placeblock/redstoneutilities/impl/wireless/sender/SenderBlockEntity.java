@@ -1,6 +1,7 @@
 package de.placeblock.redstoneutilities.impl.wireless.sender;
 
-import de.placeblock.redstoneutilities.BlockEntityManagerRegistry;
+import de.placeblock.redstoneutilities.connector.Connectable;
+import de.placeblock.redstoneutilities.connector.ConnectorHandler;
 import de.placeblock.redstoneutilities.Messages;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
@@ -25,7 +26,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, SenderBlockEntityType> {
+public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, SenderBlockEntityType> implements Connectable<SenderBlockEntity, ReceiverBlockEntity> {
     private List<ReceiverBlockEntity> receivers = new ArrayList<>();
     public SenderBlockEntity(SenderBlockEntityType type, UUID uuid, Location location) {
         super(type, uuid, location);
@@ -65,10 +66,9 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
     public void remove(Player player, boolean drop) {
         for (ReceiverBlockEntity receiver : this.receivers) {
             receiver.getSenders().remove(this);
-            BlockEntityManagerRegistry managerRegistry = RedstoneUtilities.getInstance().getManagerRegistry();
-            WirelessManager wirelessManager = managerRegistry.get(WirelessManager.WIRELESS_NAME, WirelessManager.class);
-            ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
-            connectorHandler.giveCost(player, this.getInteraction().getLocation(), receiver.getBlockLocation());
+            ConnectorHandler connectorHandler = RedstoneUtilities.getInstance().getConnectorHandler();
+            int cost = connectorHandler.getCost(this.getBlockLocation(), receiver.getBlockLocation());
+            connectorHandler.giveCost(player, cost, Material.REDSTONE);
         }
         super.remove(player, drop);
     }
@@ -76,17 +76,6 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
     @Override
     protected void handleInfometerInteraction(Player player) {
         player.sendMessage(Messages.getInfometerSender(this.receivers));
-    }
-
-    @Override
-    protected void handleConnectorInteraction(Player player) {
-        BlockEntityManagerRegistry managerRegistry = RedstoneUtilities.getInstance().getManagerRegistry();
-        WirelessManager wirelessManager = managerRegistry.get(WirelessManager.WIRELESS_NAME, WirelessManager.class);
-        ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
-        if (connectorHandler.hasPlayer(player)) return;
-
-        connectorHandler.addPlayer(player, this, player.isSneaking());
-        player.sendMessage(Messages.CONNECT_CANCEL);
     }
 
     @Override
@@ -100,5 +89,34 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
         super.store();
         List<UUID> receiverUUIDs = this.receivers.stream().map(BlockEntity::getUuid).toList();
         WirelessPDCUtil.setReceivers(this.getInteraction(), receiverUUIDs);
+    }
+
+    @Override
+    public Class<ReceiverBlockEntity> getTargetType() {
+        return ReceiverBlockEntity.class;
+    }
+
+    @Override
+    public void onConnect(Player player, Connectable<ReceiverBlockEntity, SenderBlockEntity> connected) {
+        ReceiverBlockEntity receiver = (ReceiverBlockEntity) connected;
+        this.receivers.add(receiver);
+        receiver.getSenders().add(this);
+    }
+
+    @Override
+    public void onDisconnect(Player player, Connectable<ReceiverBlockEntity, SenderBlockEntity> disconnected) {
+        ReceiverBlockEntity receiver = (ReceiverBlockEntity) disconnected;
+        this.receivers.remove(receiver);
+        receiver.getSenders().remove(this);
+    }
+
+    @Override
+    public boolean canConnect(Player player, Connectable<ReceiverBlockEntity, SenderBlockEntity> connectable) {
+        return !this.receivers.contains(connectable);
+    }
+
+    @Override
+    public Material getCostType() {
+        return Material.REDSTONE;
     }
 }

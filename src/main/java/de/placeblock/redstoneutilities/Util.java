@@ -6,6 +6,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.RedstoneWire;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.ItemDisplay;
@@ -102,6 +103,7 @@ public class Util {
         rotateVectors(centerLocation, count, vector, (location, rotation) ->
             world.spawn(location, ItemDisplay.class, id -> {
                 id.setItemStack(itemStack);
+                id.setBrightness(new Display.Brightness(15, 15));
                 id.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f((float) (Math.PI/2+rotation), 0F, 1F, 0F), new Vector3f(size, size, size), new AxisAngle4f()));
                 callback.accept(id, rotation);
             })

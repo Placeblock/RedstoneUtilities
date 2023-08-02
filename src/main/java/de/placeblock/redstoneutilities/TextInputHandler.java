@@ -22,7 +22,9 @@ public class TextInputHandler implements Listener {
         if (this.players.containsKey(player)) {
             event.setCancelled(true);
             String text = ((TextComponent) event.message()).content();
-            this.players.get(player).accept(text);
+            Consumer<String> consumer = this.players.get(player);
+            Bukkit.getScheduler().runTask(RedstoneUtilities.getInstance(), () ->
+                    consumer.accept(text));
             this.removePlayer(player);
         }
     }

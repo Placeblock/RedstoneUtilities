@@ -1,4 +1,4 @@
-package de.placeblock.redstoneutilities.impl.wireless.recipes;
+package de.placeblock.redstoneutilities.connector;
 
 import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.Recipe;

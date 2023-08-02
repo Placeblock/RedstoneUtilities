@@ -4,6 +4,7 @@
 - [AutoCrafter](#autocrafter)
 - [ItemFilter](#itemfilter)
 - [ChunkLoader](#chunkloader)
+- [Teleporter](#teleporter)
 - [Upgrades](#upgrades)
 
 ### Wireless Redstone
@@ -87,6 +88,23 @@ produce the following squares:
 
 <a href="https://ibb.co/yXgNvkD">
     <img src="https://i.ibb.co/yXgNvkD/2023-07-29-17-53-53.png" alt="2023-07-29-17-53-53">
+</a>
+
+### Teleporter
+
+Teleporter can be placed and connected via the Redstone Connector (already described in [Wireless Redstone](#wireless-redstone)).
+The Teleporter will show the name of the Target-Teleporter above it.
+
+By right-clicking on the Teleporter you can rename and upgrade it. The following upgrades
+are possible:
+- Efficiency (Increases possible distance: <code>distance = level*30+30</code>)
+- Speed (Decreases the teleport duration: <code>time = 6-level</code>)
+
+For the Speedd Level the Level of the start-teleporter matters.
+For the Efficiency Effect both Teleporters have to have the required Level!
+
+<a href="https://ibb.co/sCWPHdB">
+    <img src="https://i.ibb.co/sCWPHdB/2023-08-01-01-00-32.png" alt="2023-08-01-01-00-32">
 </a>
 
 ### Upgrades

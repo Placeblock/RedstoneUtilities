@@ -1,10 +1,9 @@
 package de.placeblock.redstoneutilities.impl.wireless.receiver;
 
-import de.placeblock.redstoneutilities.BlockEntityManagerRegistry;
-import de.placeblock.redstoneutilities.Messages;
-import de.placeblock.redstoneutilities.RedstoneUtilities;
-import de.placeblock.redstoneutilities.Util;
+import de.placeblock.redstoneutilities.*;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
+import de.placeblock.redstoneutilities.connector.Connectable;
+import de.placeblock.redstoneutilities.connector.ConnectorHandler;
 import de.placeblock.redstoneutilities.impl.wireless.*;
 import de.placeblock.redstoneutilities.impl.wireless.infometer.InfometerPDCUtil;
 import de.placeblock.redstoneutilities.impl.wireless.sender.SenderBlockEntity;
@@ -29,7 +28,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity, ReceiverBlockEntityType> {
+public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity, ReceiverBlockEntityType> implements Connectable<ReceiverBlockEntity, SenderBlockEntity> {
     private String wirelessName = "Unknown";
     private List<SenderBlockEntity> senders = new ArrayList<>();
 
@@ -64,32 +63,6 @@ public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity
         player.sendMessage(Messages.getInfometerReceiver(this.senders, this.wirelessName));
     }
 
-    protected void handleConnectorInteraction(Player player) {
-        BlockEntityManagerRegistry managerRegistry = RedstoneUtilities.getInstance().getManagerRegistry();
-        WirelessManager wirelessManager = managerRegistry.get(WirelessManager.WIRELESS_NAME, WirelessManager.class);
-        ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
-        if (!connectorHandler.hasPlayer(player)) return;
-
-        ConnectorHandler.ConnectorInfo connectorInfo = connectorHandler.getPlayer(player);
-
-        SenderBlockEntity senderBlockEntity = connectorInfo.getSenderBlockEntity();
-
-        if (connectorInfo.isDestroying()) {
-            this.senders.remove(senderBlockEntity);
-            senderBlockEntity.getReceivers().remove(this);
-            connectorHandler.removePlayer(player);
-            player.sendMessage(Messages.DISCONNECTED);
-        } else {
-            int cost = connectorHandler.getCost(player);
-            if (connectorHandler.removeCost(player, cost)) {
-                this.senders.add(senderBlockEntity);
-                senderBlockEntity.getReceivers().add(this);
-                connectorHandler.removePlayer(player);
-                player.sendMessage(Messages.CONNECTED);
-            }
-        }
-    }
-
     public void summonParticles() {
         Location location = this.getCenterLocation();
         World world = location.getWorld();
@@ -121,10 +94,9 @@ public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity
     public void remove(Player player, boolean drop) {
         for (SenderBlockEntity sender : this.senders) {
             sender.getReceivers().remove(this);
-            BlockEntityManagerRegistry managerRegistry = RedstoneUtilities.getInstance().getManagerRegistry();
-            WirelessManager wirelessManager = managerRegistry.get(WirelessManager.WIRELESS_NAME, WirelessManager.class);
-            ConnectorHandler connectorHandler = wirelessManager.getConnectorHandler();
-            connectorHandler.giveCost(player, sender.getBlockLocation(), this.getBlockLocation());
+            ConnectorHandler connectorHandler = RedstoneUtilities.getInstance().getConnectorHandler();
+            int cost = connectorHandler.getCost(sender.getBlockLocation(), this.getBlockLocation());
+            connectorHandler.giveCost(player, cost, Material.REDSTONE);
         }
         this.setPower(0);
         super.remove(player, drop);
@@ -146,5 +118,34 @@ public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity
         WirelessPDCUtil.setName(interaction, this.wirelessName);
         List<UUID> senderUUIDs = this.senders.stream().map(BlockEntity::getUuid).toList();
         WirelessPDCUtil.setSenders(interaction, senderUUIDs);
+    }
+
+    @Override
+    public Class<SenderBlockEntity> getTargetType() {
+        return SenderBlockEntity.class;
+    }
+
+    @Override
+    public void onConnect(Player player, Connectable<SenderBlockEntity, ReceiverBlockEntity> connected) {
+        SenderBlockEntity sender = (SenderBlockEntity) connected;
+        this.senders.add(sender);
+        sender.getReceivers().add(this);
+    }
+
+    @Override
+    public void onDisconnect(Player player, Connectable<SenderBlockEntity, ReceiverBlockEntity> disconnected) {
+        SenderBlockEntity sender = (SenderBlockEntity) disconnected;
+        this.senders.remove(sender);
+        sender.getReceivers().remove(this);
+    }
+
+    @Override
+    public boolean canConnect(Player player, Connectable<SenderBlockEntity, ReceiverBlockEntity> connectable) {
+        return !this.senders.contains(connectable);
+    }
+
+    @Override
+    public Material getCostType() {
+        return Material.REDSTONE;
     }
 }

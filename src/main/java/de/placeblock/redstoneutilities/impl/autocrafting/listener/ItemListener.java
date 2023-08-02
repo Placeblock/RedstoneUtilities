@@ -3,6 +3,7 @@ package de.placeblock.redstoneutilities.impl.autocrafting.listener;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.impl.autocrafting.AutoCrafterBlockEntity;
+import de.placeblock.redstoneutilities.impl.autocrafting.AutoCrafterBlockEntityType;
 import de.placeblock.redstoneutilities.impl.autocrafting.RecipeUtil;
 import de.placeblock.redstoneutilities.blockentity.BlockEntityRegistry;
 import org.bukkit.Bukkit;
@@ -79,7 +80,7 @@ public class ItemListener implements Listener {
         Interaction interaction = Util.getInteraction(interactionLoc);
         if (interaction == null) return null;
         BlockEntityRegistry blockEntityRegistry = RedstoneUtilities.getInstance().getBlockEntityRegistry();
-        return blockEntityRegistry.get(interaction, AutoCrafterBlockEntity.class);
+        return blockEntityRegistry.get(interaction, AutoCrafterBlockEntity.class, AutoCrafterBlockEntityType.class);
     }
 
     @EventHandler
