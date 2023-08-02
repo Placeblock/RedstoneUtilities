@@ -5,7 +5,3 @@ blockentities:
   filter: true
   chunkloader: true
   teleporter: true
-
-# BlockEntities get autosaved every x ticks. -1 to disable.
-# Minimum is 21 (every second)
-blockentity-autosave-interval: 6000

@@ -134,6 +134,7 @@ public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, 
     @Override
     public void afterUpgrade(Upgrade upgrade, Integer level) {
         this.setForceLoad();
+        this.onChange();
     }
 
     @Override

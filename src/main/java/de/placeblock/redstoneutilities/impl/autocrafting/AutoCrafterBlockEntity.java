@@ -51,6 +51,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
         this.recipe = recipe;
         this.removeRecipeEntities();
         this.summonRecipeEntities();
+        this.onChange();
     }
 
     public Dropper getDropper() {
@@ -345,7 +346,7 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
 
     @Override
     public void afterUpgrade(Upgrade upgrade, Integer level) {
-
+        this.onChange();
     }
 
     @Override

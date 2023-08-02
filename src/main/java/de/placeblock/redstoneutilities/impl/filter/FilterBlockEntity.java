@@ -53,6 +53,7 @@ public class FilterBlockEntity extends BlockEntity<FilterBlockEntity, FilterBloc
         if (this.filter != null) {
             this.summonFilterEntities();
         }
+        this.onChange();
     }
 
     private void removeFilterEntities() {

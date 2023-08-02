@@ -66,6 +66,10 @@ public abstract class BlockEntity<B extends BlockEntity<B, BT>, BT extends Block
         }
     }
 
+    public void onChange() {
+        this.store();
+    }
+
     public Interaction getInteraction() {
         this.getLocation().getWorld().getChunkAt(this.getLocation());
         return (Interaction) Bukkit.getEntity(this.uuid);

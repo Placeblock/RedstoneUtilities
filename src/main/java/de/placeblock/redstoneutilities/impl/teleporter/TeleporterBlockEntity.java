@@ -47,6 +47,7 @@ public class TeleporterBlockEntity extends BlockEntity<TeleporterBlockEntity, Te
         if (this.targetTeleporter != null) {
             this.summonTargetTeleporterEntity();
         }
+        this.onChange();
     }
 
     public void removeTargetTeleporterEntity() {
@@ -203,7 +204,7 @@ public class TeleporterBlockEntity extends BlockEntity<TeleporterBlockEntity, Te
 
     @Override
     public void afterUpgrade(Upgrade upgrade, Integer level) {
-
+        this.onChange();
     }
 
     @Override

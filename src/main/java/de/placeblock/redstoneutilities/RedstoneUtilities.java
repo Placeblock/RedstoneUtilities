@@ -13,7 +13,6 @@ import de.placeblock.redstoneutilities.upgrades.Upgrade;
 import de.placeblock.redstoneutilities.upgrades.UpgradeItems;
 import lombok.Getter;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
@@ -49,7 +48,6 @@ public class RedstoneUtilities extends JavaPlugin {
         this.createRegistries();
         this.createManagers();
         this.registerListeners();
-        this.startAutoSave();
         this.registerRecipes();
         this.registerCommands();
     }
@@ -105,26 +103,6 @@ public class RedstoneUtilities extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("bes")).setExecutor(new BlockEntityStructureCommand());
         Objects.requireNonNull(this.getCommand("euuid")).setExecutor(new NearbyEntityUUIDCommand());
         this.getLogger().info("Registered Commands");
-    }
-
-    private void startAutoSave() {
-        int interval = this.getConfig().getInt("blockentity-autosave-interval", -1);
-        if (interval == -1) {
-            this.getLogger().warning("Autosave interval was set to -1... stopping autosave");
-            return;
-        }
-        if (interval < 20) {
-            this.getLogger().warning("Autosave interval was set to <20... stopping autosave");
-            return;
-        }
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
-            this.getLogger().info("Storing Data in Entities");
-            for (BlockEntity<?, ?> blockEntity : this.blockEntityRegistry.getBlockEntities().values()) {
-                blockEntity.store();
-            }
-        }, interval, interval);
-        this.getLogger().info("Started BlockEntity Save-Scheduler");
-
     }
 
     @Override

@@ -101,6 +101,7 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
         ReceiverBlockEntity receiver = (ReceiverBlockEntity) connected;
         this.receivers.add(receiver);
         receiver.getSenders().add(this);
+        this.onChange();
     }
 
     @Override
@@ -108,6 +109,7 @@ public class SenderBlockEntity extends WirelessBlockEntity<SenderBlockEntity, Se
         ReceiverBlockEntity receiver = (ReceiverBlockEntity) disconnected;
         this.receivers.remove(receiver);
         receiver.getSenders().remove(this);
+        this.onChange();
     }
 
     @Override

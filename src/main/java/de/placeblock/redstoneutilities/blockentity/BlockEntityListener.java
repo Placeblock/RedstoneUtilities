@@ -4,6 +4,7 @@ import de.placeblock.redstoneutilities.Items;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.connector.Connectable;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,7 +19,10 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 @RequiredArgsConstructor
@@ -121,6 +125,17 @@ public class BlockEntityListener implements Listener {
             return placedAgainstLoc;
         } else {
             return placedLocation;
+        }
+    }
+
+    @EventHandler
+    public void on(ChunkUnloadEvent event) {
+        BlockEntityRegistry blockEntityRegistry = this.plugin.getBlockEntityRegistry();
+        for (BlockEntity<?, ?> blockEntity : blockEntityRegistry.getBlockEntities().values()) {
+            if (event.getChunk().equals(blockEntity.getLocation().getChunk())) {
+                blockEntity.disable();
+                blockEntityRegistry.remove(blockEntity);
+            }
         }
     }
 }

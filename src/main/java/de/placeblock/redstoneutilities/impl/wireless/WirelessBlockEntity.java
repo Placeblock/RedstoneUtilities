@@ -42,6 +42,7 @@ public abstract class WirelessBlockEntity<B extends WirelessBlockEntity<B, BT>, 
         this.wirelessType = type;
         this.removeTypeEntities();
         this.spawnTypeEntities(type);
+        this.onChange();
     }
 
     private void spawnTypeEntities(Material type) {
