@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class Util {
 
@@ -122,5 +123,15 @@ public class Util {
             }
         }
         return chunks;
+    }
+
+    public static void particleLine(Location start, Location end, Consumer<Location> callback) {
+        Vector betweenVec = start.clone().subtract(end).toVector();
+        double distance = betweenVec.length();
+        for (double i = 0; i < 1; i = i + 0.5/distance) {
+            Vector particleVec = betweenVec.clone().multiply(i);
+            Location particleLoc = end.clone().add(particleVec);
+            callback.accept(particleLoc);
+        }
     }
 }

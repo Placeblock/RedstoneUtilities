@@ -7,6 +7,7 @@ import de.placeblock.redstoneutilities.connector.ConnectorRecipe;
 import de.placeblock.redstoneutilities.impl.autocrafting.AutoCraftingManager;
 import de.placeblock.redstoneutilities.impl.chunkloader.ChunkLoaderManager;
 import de.placeblock.redstoneutilities.impl.filter.FilterManager;
+import de.placeblock.redstoneutilities.impl.itemnetwork.ItemNetworkManager;
 import de.placeblock.redstoneutilities.impl.teleporter.TeleporterManager;
 import de.placeblock.redstoneutilities.impl.wireless.WirelessManager;
 import de.placeblock.redstoneutilities.upgrades.Upgrade;
@@ -58,6 +59,7 @@ public class RedstoneUtilities extends JavaPlugin {
         this.checkAndCreateManager(FilterManager.FILTER_NAME, FilterManager::new);
         this.checkAndCreateManager(TeleporterManager.TELEPORTER_NAME, TeleporterManager::new);
         this.checkAndCreateManager(WirelessManager.WIRELESS_NAME, WirelessManager::new);
+        this.checkAndCreateManager(ItemNetworkManager.ITEM_NETWORK_NAME, ItemNetworkManager::new);
     }
 
     private void checkAndCreateManager(String name, Supplier<BlockEntityManager> constructor) {
