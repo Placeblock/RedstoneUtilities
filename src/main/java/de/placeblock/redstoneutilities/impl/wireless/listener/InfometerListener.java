@@ -1,7 +1,7 @@
 package de.placeblock.redstoneutilities.impl.wireless.listener;
 
 import de.placeblock.redstoneutilities.Items;
-import de.placeblock.redstoneutilities.impl.wireless.infometer.InfometerListGUI;
+import de.placeblock.redstoneutilities.impl.wireless.infometer.InfometerGUI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,10 +17,8 @@ public class InfometerListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getItem();
         if (item != null && Items.isInfometer(item)) {
-            InfometerListGUI infometerListGUI = new InfometerListGUI(player, item);
-            infometerListGUI.setup();
-            infometerListGUI.register();
-            infometerListGUI.show();
+            InfometerGUI infometerGUI = new InfometerGUI(item);
+            infometerGUI.showPlayer(player);
         }
     }
 

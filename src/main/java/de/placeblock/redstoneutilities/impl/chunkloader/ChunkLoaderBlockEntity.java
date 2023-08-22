@@ -41,10 +41,9 @@ public class ChunkLoaderBlockEntity extends BlockEntity<ChunkLoaderBlockEntity, 
 
     @Override
     public void onInteract(PlayerInteractAtEntityEvent event) {
-        UpgradeGUI upgradeGUI = new UpgradeGUI(event.getPlayer(), this);
-        upgradeGUI.setup();
-        upgradeGUI.register();
-        upgradeGUI.show();
+        Player player = event.getPlayer();
+        UpgradeGUI upgradeGUI = new UpgradeGUI(this, player);
+        upgradeGUI.showPlayer(player);
     }
 
     public Chunk getCenterChunk() {

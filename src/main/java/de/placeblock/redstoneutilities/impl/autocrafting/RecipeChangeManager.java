@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.impl.autocrafting;
 
+import de.placeblock.redstoneutilities.Recipeable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,10 +14,10 @@ import java.util.Map;
 
 public class RecipeChangeManager implements Listener {
 
-    Map<Player, AutoCrafterBlockEntity> players = new HashMap<>();
+    Map<Player, Recipeable> players = new HashMap<>();
 
-    public void register(Player player, AutoCrafterBlockEntity blockEntity) {
-        this.players.put(player, blockEntity);
+    public void register(Player player, Recipeable recipeable) {
+        this.players.put(player, recipeable);
     }
 
     @EventHandler
@@ -32,7 +33,7 @@ public class RecipeChangeManager implements Listener {
         if (!(event.getWhoClicked() instanceof Player player)
             || !this.players.containsKey(player)) return;
         Recipe recipe = event.getRecipe();
-        AutoCrafterBlockEntity blockEntity = this.players.get(player);
-        blockEntity.setRecipe(recipe);
+        Recipeable recipeable = this.players.get(player);
+        recipeable.setRecipe(recipe);
     }
 }

@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.impl.itemnetwork.storage;
 
+import de.placeblock.redstoneutilities.impl.itemnetwork.networkcontroller.NetworkInterfaceGUI;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
@@ -16,6 +17,8 @@ public class StorageController {
     @Getter
     private Set<StorageChest> storageChests = new HashSet<>();
 
+    private final List<NetworkInterfaceGUI> interfaceGUIs = new ArrayList<>();
+
     public List<ItemStack> getContents() {
         List<ItemStack> contents = new ArrayList<>();
         for (StorageChest storageChest : new ArrayList<>(this.storageChests)) {
@@ -26,11 +29,26 @@ public class StorageController {
                 if (existing != null) {
                     existing.setAmount(existing.getAmount() + itemStack.getAmount());
                 } else {
-                    contents.add(itemStack);
+                    contents.add(itemStack.clone());
                 }
             }
         }
         return contents;
+    }
+
+    public void addInterfaceGUI(NetworkInterfaceGUI gui) {
+        this.interfaceGUIs.add(gui);
+    }
+
+    public void removeInterfaceGUI(NetworkInterfaceGUI gui) {
+        this.interfaceGUIs.add(gui);
+    }
+
+    public void updateGUIs() {
+        List<ItemStack> contents = this.getContents();
+        for (NetworkInterfaceGUI interfaceGUI : this.interfaceGUIs) {
+            interfaceGUI.updateContents(contents);
+        }
     }
 
     private boolean check(StorageChest storageChest) {
@@ -44,10 +62,6 @@ public class StorageController {
 
     public void removeChest(StorageChest storageChest) {
         this.storageChests.remove(storageChest);
-    }
-
-    public void addChest(StorageChest storageChest) {
-        this.storageChests.add(storageChest);
     }
 
     public int removeItem(ItemStack item) {

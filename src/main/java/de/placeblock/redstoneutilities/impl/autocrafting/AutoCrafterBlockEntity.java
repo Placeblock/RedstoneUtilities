@@ -1,5 +1,6 @@
 package de.placeblock.redstoneutilities.impl.autocrafting;
 
+import de.placeblock.redstoneutilities.Recipeable;
 import de.placeblock.redstoneutilities.RedstoneUtilities;
 import de.placeblock.redstoneutilities.Util;
 import de.placeblock.redstoneutilities.blockentity.BlockEntity;
@@ -28,7 +29,7 @@ import java.util.*;
 
 @Setter
 @Getter
-public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> implements Upgradeable {
+public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, AutoCrafterBlockEntityType> implements Upgradeable, Recipeable {
     private static final String RECIPE_ENTITY_NAME = "AUTO_CRAFTER_RECIPE";
     private static final NamespacedKey RECIPE_KEY_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "recipe_key");
     private static final NamespacedKey RECIPE_NAMESPACE_KEY = new NamespacedKey(RedstoneUtilities.getInstance(), "recipe_namespace");
@@ -245,11 +246,10 @@ public class AutoCrafterBlockEntity extends BlockEntity<AutoCrafterBlockEntity, 
 
     @Override
     public void onInteract(PlayerInteractAtEntityEvent event) {
-        if (event.getPlayer().isSneaking()) return;
-        AutoCrafterGUI autoCrafterGUI = new AutoCrafterGUI(event.getPlayer(), this);
-        autoCrafterGUI.register();
-        autoCrafterGUI.setup();
-        autoCrafterGUI.show();
+        Player player = event.getPlayer();
+        if (player.isSneaking()) return;
+        AutoCrafterGUI autoCrafterGUI = new AutoCrafterGUI(this);
+        autoCrafterGUI.showPlayer(player);
     }
 
     @Override

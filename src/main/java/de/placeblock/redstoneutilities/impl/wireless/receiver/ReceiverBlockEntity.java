@@ -28,14 +28,13 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity, ReceiverBlockEntityType> implements Connectable<ReceiverBlockEntity, SenderBlockEntity> {
+public class ReceiverBlockEntity extends WirelessBlockEntity<ReceiverBlockEntity, ReceiverBlockEntityType> implements Connectable<ReceiverBlockEntity, SenderBlockEntity>, Powerable {
     private String wirelessName = "Unknown";
     private List<SenderBlockEntity> senders = new ArrayList<>();
 
     public ReceiverBlockEntity(ReceiverBlockEntityType type, UUID uuid, Location location) {
         super(type, uuid, location);
     }
-
 
     protected void handleInfometerInteraction(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();

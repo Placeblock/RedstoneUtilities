@@ -48,8 +48,7 @@ public class Messages {
     public static final Component RENAME = Component.text("Bitte ").color(RedstoneUtilities.INFERIOR_COLOR)
             .append(Component.text("gebe einen neuen Namen ein! ").color(RedstoneUtilities.PRIMARY_COLOR));
 
-    public static final Component RENAMED = Component.text("Du hast ").color(RedstoneUtilities.INFERIOR_COLOR)
-            .append(Component.text("den Empfänger umbenannt! ").color(RedstoneUtilities.PRIMARY_COLOR));
+    public static final Component RENAMED = Util.primary("Erfolgreich umbenannt!");
 
     public static Component getInfometerReceiver(List<SenderBlockEntity> senders, String name) {
         return Component.text("Empfänger (" + name + ")")

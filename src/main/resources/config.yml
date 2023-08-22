@@ -5,3 +5,4 @@ blockentities:
   filter: true
   chunkloader: true
   teleporter: true
+  item_network: true

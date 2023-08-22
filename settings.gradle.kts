@@ -7,3 +7,5 @@ pluginManagement {
 
 rootProject.name = "RedstoneUtilities"
 
+include(":BetterInventories")
+project(":BetterInventories").projectDir = file("../BetterInventories")

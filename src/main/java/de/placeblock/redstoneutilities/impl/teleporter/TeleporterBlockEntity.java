@@ -71,10 +71,8 @@ public class TeleporterBlockEntity extends BlockEntity<TeleporterBlockEntity, Te
 
     @Override
     public void onInteract(PlayerInteractAtEntityEvent event) {
-        TeleporterGUI autoCrafterGUI = new TeleporterGUI(event.getPlayer(), this);
-        autoCrafterGUI.register();
-        autoCrafterGUI.setup();
-        autoCrafterGUI.show();
+        TeleporterGUI autoCrafterGUI = new TeleporterGUI(this);
+        autoCrafterGUI.showPlayer(event.getPlayer());
     }
 
     /**

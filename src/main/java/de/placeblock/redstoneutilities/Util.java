@@ -2,6 +2,7 @@ package de.placeblock.redstoneutilities;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -84,7 +85,7 @@ public class Util {
         return (RedstoneWire) block.getBlockData();
     }
 
-    public static Component getLore(String text) {
+    public static TextComponent getLore(String text) {
         return Component.text(text)
                 .color(RedstoneUtilities.INFERIOR_COLOR)
                 .decoration(TextDecoration.ITALIC, false);
@@ -133,5 +134,13 @@ public class Util {
             Location particleLoc = end.clone().add(particleVec);
             callback.accept(particleLoc);
         }
+    }
+
+    public static TextComponent primary(String text) {
+        return Component.text(text).color(RedstoneUtilities.PRIMARY_COLOR).decoration(TextDecoration.ITALIC, false);
+    }
+
+    public static TextComponent inferior(String text) {
+        return Component.text(text).color(RedstoneUtilities.INFERIOR_COLOR).decoration(TextDecoration.ITALIC, false);
     }
 }

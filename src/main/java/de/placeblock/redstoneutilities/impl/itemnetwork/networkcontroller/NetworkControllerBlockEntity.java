@@ -23,7 +23,7 @@ public class NetworkControllerBlockEntity extends BlockEntity<NetworkControllerB
     @Getter
     @Setter
     Map<Upgrade, Integer> upgrades = new HashMap<>();
-
+    @Getter
     private StorageController storageController;
     private BukkitTask particleTask;
 
@@ -33,7 +33,8 @@ public class NetworkControllerBlockEntity extends BlockEntity<NetworkControllerB
 
     @Override
     public void onInteract(PlayerInteractAtEntityEvent event) {
-
+        NetworkControllerGUI networkControllerGUI = new NetworkControllerGUI(this);
+        networkControllerGUI.showPlayer(event.getPlayer());
     }
 
     @Override
@@ -49,13 +50,13 @@ public class NetworkControllerBlockEntity extends BlockEntity<NetworkControllerB
     private Set<StorageChest> getNewStorageChests() {
         Set<StorageChest> storageChests = new HashSet<>();
         int upgradeLevel = this.getUpgradeLevel(Upgrade.EFFICIENCY, 0);
-        double maxDistance = Math.pow(upgradeLevel*4, 2);
+        double maxDistance = Math.pow(upgradeLevel*3+3, 2);
         for (Chunk chestChunk : this.getChestChunks()) {
             for (BlockState tileEntity : chestChunk.getTileEntities()) {
                 if (!(tileEntity instanceof Chest chest)) continue;
                 Location location = chest.getLocation();
                 if (location.distanceSquared(this.location) > maxDistance) continue;
-                storageChests.add(new StorageChest(chest.getLocation(), chest.getInventory()));
+                storageChests.add(new StorageChest(this.getStorageController(), chest.getLocation(), chest.getInventory()));
             }
         }
         return storageChests;
@@ -76,8 +77,10 @@ public class NetworkControllerBlockEntity extends BlockEntity<NetworkControllerB
         this.updateStorageChests();
     }
 
-    private void updateStorageChests() {
-        this.storageController.setStorageChests(this.getNewStorageChests());
+    public void updateStorageChests() {
+        Set<StorageChest> newStorageChests = this.getNewStorageChests();
+        this.storageController.setStorageChests(newStorageChests);
+        System.out.println("UPDATE CHESTS");
     }
 
     @Override
@@ -86,21 +89,19 @@ public class NetworkControllerBlockEntity extends BlockEntity<NetworkControllerB
         this.loadUpgrades();
         this.storageController = new StorageController();
         this.updateStorageChests();
-        this.startParticleTask();
+        this.startParticleTask(Color.YELLOW, 0);
+        this.startParticleTask(Color.BLUE, 5);
     }
 
-    private void startParticleTask() {
+    private void startParticleTask(Color color, long delay) {
         World world = this.location.getWorld();
         this.particleTask = Bukkit.getScheduler().runTaskTimerAsynchronously(RedstoneUtilities.getInstance(), () -> {
             for (StorageChest storageChest : this.storageController.getStorageChests()) {
                 Location chestLocation = storageChest.getLocation();
-                Util.particleLine(chestLocation.toCenterLocation(), this.getCenterLocation(), loc -> {
-                    world.spawnParticle(Particle.NAUTILUS, loc, 1, 0, 0, 0, 0);
-                    world.spawnParticle(Particle.ENCHANTMENT_TABLE, loc, 1, 0, 0, 0, 0);
-                    world.spawnParticle(Particle.SCULK_CHARGE, loc, 1, 0, 0, 0, 0);
-                });
+                Util.particleLine(chestLocation.toCenterLocation(), this.getCenterLocation(), loc ->
+                        world.spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0, new Particle.DustOptions(color, 1F)));
             }
-        }, 0, 10);
+        }, delay, 10);
     }
 
     @Override
